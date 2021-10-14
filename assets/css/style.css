@@ -15,7 +15,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: white;
+    color: lightgrey;
   }
 
   .box{ 
@@ -34,4 +34,17 @@ header {
     content:'';
     height: 20vh;
     display: block;
+}
+
+.card {
+    text-align: center;
+    background-color: lightgrey;
+}
+
+body {
+    background-color: lightgrey;
+}
+
+.col-4 {
+    margin: 0 auto;
 }
