@@ -9,6 +9,7 @@ let enemies;
 let HUD;
 let game;
 let config;
+let background;
 //#endregion
 
 //#region puzzle properties
@@ -28,8 +29,13 @@ window.onload = function () {
     config = {
         type: Phaser.AUTO,
         parent: 'game',
-        width: 800,
-        height: 600,
+        scale:
+        {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH,
+            width: 800,
+            height: 600
+        },
         physics: {
             default: 'arcade',
         },
@@ -37,10 +43,40 @@ window.onload = function () {
     }
     game = new Phaser.Game(config);
     window.focus();
-    resize();
-    window.addEventListener("resize", resize, false); //listener to check if the window size has been changed
 }
 
+class MainMenu extends Phaser.Scene {
+    constructor() {
+        super("MainMenu");
+    }
+
+
+
+    preload() {
+        this.load.image('bg', '../assets/sprites/bl.jpg') //load our background image
+    }
+
+    create() {
+        // let background = this.add.image(parent.height, parent.width, 'bg');
+        // let startButton = this.add.text(400, 300, 'Start Game')
+        //     .setOrigin(0.5)
+        //     .setPadding(10)
+        //     .setStyle({ backgroundColor: '#111' })
+        //     .setInteractive({ useHandCursor: true })
+        //     .on('pointerdown', startGame())
+        //     .on('pointerover', () => startButton.setStyle({ fill: '#f39c12' }))
+        //     .on('pointerout', () => startButton.setStyle({ fill: '#FFF' }));
+
+        // function startGame()
+        // {
+        //     scene.scene.start(IntroScene);
+        // }
+    }
+
+    update() {
+
+    }
+}
 
 
 //#region Intro Scene
@@ -70,18 +106,20 @@ class IntroScene extends Phaser.Scene {
 
         //lets make some enemies
         enemies = this.physics.add.sprite(150, 300, 'enemies');
-        enemies.setCollideWorldBounds(true);
 
         //add those two to a "character" layer
-        // let layer = this.add.layer();
-        // layer.add([player, enemies]);
+        let layer = this.add.layer();
+        layer.add([player, enemies]);
 
         //we need some physics, can't have everyone overlapping
-        this.physics.add.collider(player, world, enemies);
+        // this.physics.add.collider(player, world);
+        this.physics.add.collider(player, enemies, hitEnemy, null, this);
+
 
         //now lets make the "world", being the black background and HUD
         world = this.physics.add.staticGroup();
 
+        //create corrolation between up, down, left and right keys with the addition of space and shift and game
         cursors = this.input.keyboard.createCursorKeys();
 
         //#region animations
@@ -90,25 +128,25 @@ class IntroScene extends Phaser.Scene {
         //move forward animation
         this.anims.create({
             key: 'forward',
-            frames: this.anims.generateFrameNumbers('player', {frames: [ 18, 19, 20 ]})
+            frames: this.anims.generateFrameNumbers('player', { frames: [18, 19, 20] })
         })
 
         //move back animation
         this.anims.create({
             key: 'backward',
-            frames: this.anims.generateFrameNumbers('player', {frames: [ 0, 1, 2 ]})
+            frames: this.anims.generateFrameNumbers('player', { frames: [0, 1, 2] })
         })
 
         //move left animation
         this.anims.create({
             key: 'left',
-            frames: this.anims.generateFrameNumbers('player', {frames: [ 6, 7, 8]})
+            frames: this.anims.generateFrameNumbers('player', { frames: [6, 7, 8] })
         })
 
         //move right animation
         this.anims.create({
             key: 'right',
-            frames: this.anims.generateFrameNumbers('player', {frames: [ 12, 13, 14]})
+            frames: this.anims.generateFrameNumbers('player', { frames: [12, 13, 14] })
         })
         //#endregion
     }
@@ -146,8 +184,12 @@ class IntroScene extends Phaser.Scene {
         }
     }
 }
+function hitEnemy(player, enemy) {
+    this.physics.pause();
+    console.log("Collision Detected");
+    return hitEnemy();
+}
 //#endregion
-
 
 //#region Puzzle Scene
 class PuzzleScene extends Phaser.Scene {
@@ -497,20 +539,3 @@ class PuzzleScene extends Phaser.Scene {
     }
 }
 //#endregion
-
-
-function resize() {
-    var canvas = document.querySelector("canvas");
-    var windowWidth = window.innerWidth;
-    var windowHeight = window.innerHeight;
-    var windowRatio = windowWidth / windowHeight;
-    var gameRatio = game.config.width / game.config.height;
-    if (windowRatio < gameRatio) {
-        canvas.style.width = windowWidth + "px";
-        canvas.style.height = (windowWidth / gameRatio) + "px";
-    }
-    else {
-        canvas.style.width = (windowHeight * gameRatio) + "px";
-        canvas.style.height = windowHeight + "px";
-    }
-}
