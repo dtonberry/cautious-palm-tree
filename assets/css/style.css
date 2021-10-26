@@ -206,8 +206,6 @@ footer ul {
     margin: 2px 0 0;
 }
 
-
-}
 .widget.no-box {
     padding: 0;
     background-color: transparent;
@@ -218,6 +216,7 @@ footer ul {
     -ms-box-shadow: none;
     -o-box-shadow: none;
 }
+
 .typo-light h1,
 .typo-light h2,
 .typo-light h3,
@@ -230,18 +229,22 @@ footer ul {
 .typo-light small {
     color: #fff;
 }
+
 ul.social-footer2 {
     margin: 0;
     padding: 0;
     width: auto;
 }
+
 ul.social-footer2 li {
     display: inline-block;
     padding: 0;
 }
+
 ul.social-footer2 li a:hover {
     background-color: #ff8d1e;
 }
+
 ul.social-footer2 li a {
     display: block;
     height: 30px;
