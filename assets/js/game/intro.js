@@ -9,19 +9,6 @@ let config;
 let music;
 //#endregion
 
-//#region puzzle properties
-let gameOptions = {
-    fieldSize: 7,
-    gemColors: 6,
-    gemSize: 100,
-    swapSpeed: 200,
-    fallSpeed: 100,
-    destroySpeed: 200
-}
-const HORIZONTAL = 1;
-const VERTICAL = 2;
-//#endregion
-
 window.onload = function() {
     config = {
         type: Phaser.AUTO,
@@ -53,18 +40,13 @@ class MainMenu extends Phaser.Scene {
 
     create() {
         //#region add background
-        let bg = this.add.sprite(-80, 30, 'bg');
+        let bg = this.add.sprite(-80, 0, 'bg');
         bg.setOrigin(0, 0);
-        bg.setScale(0.3);
+        bg.setScale(1.6);
         //#endregion
 
         //add the music
         // this.sound.play('intro');
-
-        //#region add game name text
-        let text = this.add.text(230, 40, "Tales of Adventure");
-        text.setFontSize(32);
-        //#endregion
 
         //#region add selection buttons
         let button = this.add.text(400, 300, "Play Game")
@@ -89,124 +71,127 @@ function startGame() {
 
 //#region Intro Scene
 class IntroScene extends Phaser.Scene {
-        constructor() {
-            super("IntroScene");
-        }
+    constructor() {
+        super("IntroScene");
+    }
 
 
-        preload() {
-            this.load.spritesheet('player', '../assets/sprites/characterSpritesheet.png', {
-                frameWidth: 16,
-                frameHeight: 16,
-                frames: 24
-            }); //this loads our character spritesheet
-            this.load.spritesheet('enemies', '../assets/sprites/dude.png', {
-                frameWidth: 32,
-                frameHeight: 48,
-                frames: 9
-            }); //this loads out enemies spritesheet
+    preload() {
+        this.load.spritesheet('player', '../assets/sprites/characterSpritesheet.png', {
+            frameWidth: 16,
+            frameHeight: 16,
+            frames: 24
+        }); //this loads our character spritesheet
+        this.load.spritesheet('enemies', '../assets/sprites/dude.png', {
+            frameWidth: 32,
+            frameHeight: 48,
+            frames: 9
+        }); //this loads out enemies spritesheet
 
-            //lets load the actually scene JSON
-            this.load.image('base_tiles', '../PhaserEditor Files/assets/!CL_DEMO_48x48.png');
-            this.load.tilemapTiledJSON('tilemap', '../PhaserEditor Files/assets/introscene.json');
-        }
+        //lets load the actually scene JSON
+        this.load.image('base_tiles', '../PhaserEditor Files/assets/!CL_DEMO_48x48.png');
+        this.load.tilemapTiledJSON('tilemap', '../PhaserEditor Files/assets/introscene.json');
+    }
 
-        create() {
+    create() {
 
-            //lets set the world fps to 60 for reasons
-            this.physics.world.setFPS(60);
+        //lets set the world fps to 60 for reasons
+        this.physics.world.setFPS(60);
 
-            //#region player
-            player = this.physics.add.sprite(100, 450, 'player'); //load the player sprite
-            player.setScale(3); //fit the sprite to the background
-            player.setCollideWorldBounds(true);
+        //#region player
+        player = this.physics.add.sprite(100, 450, 'player'); //load the player sprite
+        player.setScale(3); //fit the sprite to the background
+        player.depth = 2; //bring the player sprite to the front
+        player.setCollideWorldBounds(true);
+        //#endregion
+
+        //now lets make the "world", being the black background and HUD
+        world = this.physics.add.staticGroup();
+
+        //create corrolation between up, down, left and right keys with the addition of space and shift and game
+        cursors = this.input.keyboard.createCursorKeys();
+
+        //load the scene
+        let map = this.make.tilemap({ key: 'tilemap' });
+        let tileset = map.addTilesetImage('introscene', 'base_tiles');
+        let baseLayer = map.createLayer('base', tileset, 0, 0);
+        let furnitureLayer = map.createLayer('furniture', tileset, 0, 0);
+
+        //set up camera so that you can't move outside the tilemap
+        let camera = this.cameras.main.setBounds(0, 0, 10, 10);
+
+        //we need some physics, can't have everyone overlapping
+        this.physics.add.collider(player, world);
+        furnitureLayer.setCollisionByExclusion(-1, true);
+
+        //#region animations
+        //set some animations
+
+        //move forward animation
+        this.anims.create({
+            key: 'forward',
+            frames: this.anims.generateFrameNumbers('player', { frames: [18, 19, 20] })
+        })
+
+        //move back animation
+        this.anims.create({
+            key: 'backward',
+            frames: this.anims.generateFrameNumbers('player', { frames: [0, 1, 2] })
+        })
+
+        //move left animation
+        this.anims.create({
+            key: 'left',
+            frames: this.anims.generateFrameNumbers('player', { frames: [6, 7, 8] })
+        })
+
+        //move right animation
+        this.anims.create({
+                key: 'right',
+                frames: this.anims.generateFrameNumbers('player', { frames: [12, 13, 14] })
+            })
             //#endregion
+    }
 
-            //add those two to a "character" layer
-            let spriteLayer = this.add.layer();
-            spriteLayer.add(player);
-            spriteLayer.depth = 100;
-
-            //now lets make the "world", being the black background and HUD
-            world = this.physics.add.staticGroup();
-
-            //create corrolation between up, down, left and right keys with the addition of space and shift and game
-            cursors = this.input.keyboard.createCursorKeys();
-
-            //load the scene
-            let map = this.make.tilemap({ key: 'tilemap' });
-            let tileset = map.addTilesetImage('introscene', 'base_tiles');
-            let baseLayer = map.createLayer('base', tileset, 0, 0);
-            let furnitureLayer = map.createLayer('furniture', tileset, 0, 0);
-
-            //set up camera so that you can't move outside the tilemap
-            let camera = this.cameras.main.setBounds(0, 0, 10, 10);
-
-            //we need some physics, can't have everyone overlapping
-            // this.physics.add.collider(player, world);
-            furnitureLayer.setCollisionBetween(629, 630);
-            this.physics.add.collider(player, furnitureLayer);
-
-            //#region animations
-            //set some animations
-
-            //move forward animation
-            this.anims.create({
-                key: 'forward',
-                frames: this.anims.generateFrameNumbers('player', { frames: [18, 19, 20] })
-            })
-
-            //move back animation
-            this.anims.create({
-                key: 'backward',
-                frames: this.anims.generateFrameNumbers('player', { frames: [0, 1, 2] })
-            })
-
-            //move left animation
-            this.anims.create({
-                key: 'left',
-                frames: this.anims.generateFrameNumbers('player', { frames: [6, 7, 8] })
-            })
-
-            //move right animation
-            this.anims.create({
-                    key: 'right',
-                    frames: this.anims.generateFrameNumbers('player', { frames: [12, 13, 14] })
-                })
-                //#endregion
+    update() {
+        //if spacebar is pressed
+        if (cursors.space.isDown) {
+            player.anims.play('attack', true);
         }
 
-        update() {
-            //if spacebar is pressed
-            if (cursors.space.isDown) {
-                player.anims.play('attack', true);
-            }
+        //if left arrow is pressed
+        if (cursors.left.isDown) {
+            player.x -= 1.5;
+            player.anims.play('left', true);
+            player.anims.msPerFrame = 100;
+        }
+        //if right arrow is down
+        else if (cursors.right.isDown) {
+            player.x += 1.5;
+            player.anims.play('right', true);
+            player.anims.msPerFrame = 100;
+        }
 
-            //if left arrow is pressed
-            if (cursors.left.isDown) {
-                player.x -= 1.5;
-                player.anims.play('left', true);
-                player.anims.msPerFrame = 100;
-            }
-            //if right arrow is down
-            else if (cursors.right.isDown) {
-                player.x += 1.5;
-                player.anims.play('right', true);
-                player.anims.msPerFrame = 100;
-            }
-
-            //if up arrow is down
-            if (cursors.up.isDown) {
-                player.y -= 1.5;
-                player.anims.play('forward', true);
-                player.anims.msPerFrame = 100;
-            }
-            //if down arrow is down
-            else if (cursors.down.isDown) {
-                player.y += 1.5;
-                player.anims.play('backward', true);
-                player.anims.msPerFrame = 100;
-            }
+        //if up arrow is down
+        if (cursors.up.isDown) {
+            player.y -= 1.5;
+            player.anims.play('forward', true);
+            player.anims.msPerFrame = 100;
+        }
+        //if down arrow is down
+        else if (cursors.down.isDown) {
+            player.y += 1.5;
+            player.anims.play('backward', true);
+            player.anims.msPerFrame = 100;
         }
     }
-    //#endregion
+}
+
+function collisionDetection() {
+    this.physics.add.collider(player, this.furnitureLayer, collision, null, this);
+}
+
+function collision() {
+    this.player.setVelocity(0, 0);
+}
+//#endregion
