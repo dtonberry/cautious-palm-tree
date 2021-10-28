@@ -18,7 +18,15 @@ window.onload = function() {
         autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
         physics: {
             default: 'arcade',
+            arcade: {
+                gravity: {
+                    x: 0,
+                    y: 0
+                },
+                tileBias: 48
+            }
         },
+        antialias: false,
         scene: [MainMenu, IntroScene]
     }
     game = new Phaser.Game(config);
@@ -95,34 +103,62 @@ class IntroScene extends Phaser.Scene {
 
     create() {
 
-        //lets set the world fps to 60 for reasons
-        this.physics.world.setFPS(60);
-
-        //#region player
-        player = this.physics.add.sprite(100, 450, 'player'); //load the player sprite
-        player.setScale(3); //fit the sprite to the background
-        player.depth = 2; //bring the player sprite to the front
-        player.setCollideWorldBounds(true);
-        //#endregion
-
-        //now lets make the "world", being the black background and HUD
-        world = this.physics.add.staticGroup();
+        let camera = this.cameras.main; //initialize the camera
 
         //create corrolation between up, down, left and right keys with the addition of space and shift and game
         cursors = this.input.keyboard.createCursorKeys();
 
         //load the scene
         let map = this.make.tilemap({ key: 'tilemap' });
-        let tileset = map.addTilesetImage('introscene', 'base_tiles');
+        let tileset = map.addTilesetImage('!CL_DEMO_48x48', 'base_tiles');
+
+        //set the world bounds to the edge of the camera
+        //set the world to 30 fps so that we don't eat up too much CPU
+        this.physics.world.setFPS(30);
+        this.physics.world.setBounds(0, 0, map.x, camera.y - map.y);
+
+        //create layers
         let baseLayer = map.createLayer('base', tileset, 0, 0);
         let furnitureLayer = map.createLayer('furniture', tileset, 0, 0);
+        let doorLayer = map.createLayer('door', tileset, 0, 0);
+
+        //#region player
+        player = this.physics.add
+            .sprite(100, 450, "player"); //load the player sprite
+        player.setScale(3); //fit the sprite to the background
+        player.body.setCollideWorldBounds(true, 1, 1);
+        player.setBounce(1);
+        //#endregion
 
         //set up camera so that you can't move outside the tilemap
-        let camera = this.cameras.main.setBounds(0, 0, 10, 10);
+        camera.startFollow(player);
+        camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
         //we need some physics, can't have everyone overlapping
-        this.physics.add.collider(player, world);
-        furnitureLayer.setCollisionByExclusion(-1, true);
+        furnitureLayer.setCollisionByProperty({ collides: true });
+        baseLayer.setCollisionByProperty({ collides: true });
+        //add collision for furniture layer
+        this.physics.add.collider(player, furnitureLayer, () => console.log("collided"), null, this);
+        //add collision for base layer
+        this.physics.add.collider(player, baseLayer, () => console.log("collided"), null, this);
+
+        //debug to check player hitbox
+        this.input.keyboard.once("keydown-D", event => {
+            this.physics.world.createDebugGraphic();
+        });
+
+        //debug layer so that we can see what the player can collide with
+        let debugGraphics = this.add.graphics().setAlpha(0.75);
+        furnitureLayer.renderDebug(debugGraphics, {
+                tileColor: null,
+                collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255),
+                faceColor: new Phaser.Display.Color(40, 39, 37, 255)
+            },
+            baseLayer.renderDebug(debugGraphics, {
+                tileColor: null,
+                collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255),
+                faceColor: new Phaser.Display.Color(40, 39, 37, 255)
+            }));
 
         //#region animations
         //set some animations
@@ -154,6 +190,8 @@ class IntroScene extends Phaser.Scene {
     }
 
     update() {
+        player.setVelocity(0); //set player velocity to 0 at the start of each frame
+
         //if spacebar is pressed
         if (cursors.space.isDown) {
             player.anims.play('attack', true);
@@ -161,26 +199,26 @@ class IntroScene extends Phaser.Scene {
 
         //if left arrow is pressed
         if (cursors.left.isDown) {
-            player.x -= 1.5;
+            player.body.setVelocityX(-100);
             player.anims.play('left', true);
             player.anims.msPerFrame = 100;
         }
         //if right arrow is down
         else if (cursors.right.isDown) {
-            player.x += 1.5;
+            player.body.setVelocityX(100);
             player.anims.play('right', true);
             player.anims.msPerFrame = 100;
         }
 
         //if up arrow is down
         if (cursors.up.isDown) {
-            player.y -= 1.5;
+            player.body.setVelocityY(-100);
             player.anims.play('forward', true);
             player.anims.msPerFrame = 100;
         }
         //if down arrow is down
         else if (cursors.down.isDown) {
-            player.y += 1.5;
+            player.body.setVelocityY(100);
             player.anims.play('backward', true);
             player.anims.msPerFrame = 100;
         }
