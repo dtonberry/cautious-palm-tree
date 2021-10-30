@@ -155,7 +155,6 @@ class IntroScene extends Phaser.Scene {
                 doorLayer.setTileIndexCallback(TILES.DOOR, null);
                 camera.fade(250, 0, 0, 0);
                 camera.once("camerafadeoutcomplete", () => {
-                    player.destroy();
                     this.scene.restart();
                 });
             });
