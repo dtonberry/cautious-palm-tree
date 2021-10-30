@@ -2,7 +2,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="description" content="Home - Web Game Development">
+    <meta name="description" content="About The Game - Web Game Development">
     <meta name="authors" content="Mark Clyne, Aimee Lennon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -10,15 +10,15 @@
     <link href="../assets/css/style.css" rel="stylesheet">
 
     <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    
-    
+
+
 </head>
 
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
 
-            <div class="container-fluid">
+            <div id="nav-links" class="container-fluid">
                 <ul class="navbar-nav">
                     <li class="nav-item">
                         <a class="nav-link" style="padding-left: 50px;" href='index.html'>Home</a>
@@ -40,33 +40,121 @@
             </div>
         </nav>
     </header>
-    
+
     <div class="hero-image">
         <div class="hero-text">
             <h1>Web Games Development - Group F</h1>
         </div>
     </div>
 
-    <div class="card" style="width: 80rem; margin: 0 auto;">
-        <br>
-        <h3>About The Game</h3>
-            <br>
+    <br>
+    <div class="tales_of_adventure_preview">
+        <div class="tales_of_adventure_preview_image">
+            <img src="../assets/sprites/background.png" width="500" height="400">
+        </div>
+        <div class="tales_of_adventure_preview_text">
+            <h3="tales_of_adventure_preview_heading">Overview</h3>
+                <p>The land of Aetheria is full of magic and life.
+                </p>
+                <p>
+                    Explore caves, dungeons and lively towns to fulfil your goal.
+                </p>
+        </div>
+    </div>
+    <br><br>
+    <div class="tales_of_adventure_preview">
+        <div class="tales_of_adventure_preview_text">
+            <h3="tales_of_adventure_preview_heading">Controls</h3>
+                <p>With both touch and key controls, you choose how you experience your adventure in Aetheria.
+                </p>
+                <p>
+                    Key controls with ultilise WASD/Arrow keys
+                </p>
+                <p>
+                    Touch controls will use an onscreen d-pad and action buttons
+                </p>
+        </div>
+        <div class="tales_of_adventure_preview_image">
+            <img src="https://aws1.discourse-cdn.com/free1/uploads/phaser1/original/2X/3/33b0c3cfd27da5251cfb6fd5366f65be75721478.png" height="200">
+        </div>
+    </div>
+    <br><br>
+    <div class="tales_of_adventure_preview">
+        <div class="tales_of_adventure_preview_image">
+            <img src="https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1585938339-91LHQjMyEUL._SL500_.jpg?crop=1.00xw:0.562xh;0,0.438xh&resize=768:*" width="500" height="400">
+        </div>
+        <div class="tales_of_adventure_preview_text">
+            <h3="tales_of_adventure_preview_heading">Gameplay</h3>
+                <p>During his adventure, Mathew will have to fight enemies and solve puzzles</p>
+                <p>There will be many different enemies and puzzles to fight and solve.</p>
+        </div>
+    </div>
+    <br><br>
+    <div class="tales_of_adventure_preview">
+        <div class="tales_of_adventure_preview_text">
+            <h3="tales_of_adventure_preview_heading">Art Design</h3>
+                <p>Tales of Adventure uses 2D sprites and spritesheets for animation.</p>
+                <p></p>
+        </div>
+        <div class="tales_of_adventure_preview_image">
+            <img src="https://thumbs.dreamstime.com/z/animated-knight-character-sprites-animated-sprites-knight-character-creating-fantasy-rpg-adventure-video-games-116939824.jpg" width="500" height="400">
+        </div>
+    </div>
+    <br><br>
+    <div class="tales_of_adventure_preview">
+        <div class="tales_of_adventure_preview_image">
+            <img src="https://www.musictech.net/wp-content/uploads/2017/10/DAWsFeatured.png" width="500" height="400">
+        </div>
+        <div class="tales_of_adventure_preview_text">
+            <h3="tales_of_adventure_preview_heading">Sound Design</h3>
+                <p>Tales of Adventure uses a chiptune soundtrack</p>
+                <audio controls>
+                    <source src="../assets/audio/intro.WAV" type="audio/WAV">
+                </audio>
+                <audio controls>
+                    <source src="../assets/audio/Rick_Astley_-_Never_Gonna_Give_You_Up.ogg" type="audio/ogg">
+                </audio>
+        </div>
+    </div>
+    <br><br>
+    <div class="tales_of_adventure_preview">
+        <div class="tales_of_adventure_preview_text">
+            <h3="tales_of_adventure_preview_heading">Game Engine</h3>
+                <p>Tales of Adventure is being developed using the Phaser 3 game framework, a JavaScript based Game Engine.</p>
+        </div>
+        <div class="tales_of_adventure_preview_image">
+            <img src="../assets/sprites/tutorial_header.png" width="500" height="400">
+        </div>
+    </div>
+    <button onclick="topFunction()" id="myBtn" title="Go to top">Top</button>
+    <script src="../assets/js/web/button.js"></script>
+
+    <br><br>
+
+    <footer id="footer" class="footer-1">
+        <div class="main-footer widgets-dark typo-light">
             <div class="container">
                 <div class="row">
-                    <div class="col-4">
-                        <p>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sagittis arcu sit amet odio molestie, in viverra turpis maximus. Praesent mollis lectus eu lacinia eleifend. Nunc eu vestibulum eros, vitae mollis mauris. Donec sodales, nulla ac interdum vestibulum, velit dui scelerisque dolor, eget placerat dolor mi dapibus arcu. Maecenas ex diam, posuere et dictum ac, tristique eget magna. Pellentesque fermentum dolor nunc, sed accumsan sapien iaculis ac. Vestibulum aliquet tincidunt nibh, eu scelerisque felis egestas nec. Duis tincidunt, odio et accumsan pharetra, ante sem pulvinar nisi, id luctus mauris nulla sit amet mauris. Nunc ut semper leo. Curabitur imperdiet mauris sed justo porta hendrerit. Etiam sit amet ex vitae augue blandit iaculis. Aenean aliquam massa vitae viverra rhoncus.
-                    
-                    Ut luctus sit amet justo quis efficitur. Cras gravida ligula id elit pretium sodales. Donec aliquam elit orci, eu accumsan ipsum egestas quis. Nam nec dolor elit. Sed massa neque, consequat sit amet rutrum eu, euismod quis risus. Pellentesque volutpat ipsum eget nibh aliquam, quis elementum eros gravida. Donec at lectus congue, interdum orci eu, posuere diam. Nullam ante odio, feugiat ac suscipit eget, porttitor in magna. Sed sit amet lobortis ipsum. Mauris vitae viverra neque. Vivamus consectetur in urna sit amet facilisis. Phasellus aliquet augue pulvinar est condimentum, et rutrum erat auctor. Proin eget finibus orci.
-                    
-                    In tincidunt orci nec nibh placerat ultricies. Vestibulum risus massa, scelerisque eget pharetra eget, viverra vitae nisl. In tincidunt facilisis dictum. Etiam eu dui sit amet justo mattis commodo. Nullam euismod aliquam egestas. Morbi vel tempor libero, a fermentum libero. Etiam condimentum scelerisque purus non sagittis.
-                    
-                    Curabitur blandit in turpis id auctor. Pellentesque cursus magna ac pretium scelerisque. In hac habitasse platea dictumst. Sed mi justo, fringilla ac convallis in, mattis et tortor. Nullam non auctor arcu. Morbi eu velit vehicula, sollicitudin purus id, fermentum odio. Ut egestas, sapien ac ultrices placerat, dolor risus dapibus sapien, vulputate venenatis justo turpis non tortor. Duis pulvinar eget sapien nec aliquet.
-                    
-                    Sed semper consectetur mauris in luctus. Suspendisse eget posuere metus, eu ullamcorper mauris. Sed vehicula elit in sem porttitor laoreet. Etiam efficitur placerat nulla. Interdum et malesuada fames ac ante ipsum primis in faucibus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Suspendisse ultricies quam id aliquet suscipit. Pellentesque cursus augue et libero ullamcorper, nec venenatis tellus ultrices. Fusce luctus magna et nunc sagittis consequat. Donec iaculis justo sed porttitor rutrum. In sed dignissim nibh, ac ultricies libero.
-                        </p>
+
+                    <div class="col-xs-12 col-sm-6 col-md-3">
+                        <div class="widget subscribe no-box">
+                            <h5 class="widget-title">Web Development Group F<span></span></h5>
+                            <p>We are a two person group for web development at University of the West of Scotland </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-copyright">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <p>Copyright © 2021. All rights reserved.</p>
                     </div>
                 </div>
             </div>
-    </div>
+        </div>
+    </footer>
 </body>
