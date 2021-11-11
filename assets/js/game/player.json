@@ -1,0 +1,15 @@
+{
+    "playerName": "Mathew",
+    "x": 400,
+    "y": 300,
+    "lastx": 0,
+    "lasty": 0,
+    "hp": 5,
+    "level": 1,
+    "exp": 0,
+    "damage": 1,
+    "inventory": {
+        "weapon": "sword",
+        "slot1": "missive"
+    }
+}

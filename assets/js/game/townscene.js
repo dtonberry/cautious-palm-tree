@@ -1,5 +1,4 @@
 import TILES from './tile-mapping.js';
-import { UIScene } from './uiScene.js';
 
 //#region world properties
 let player;
@@ -30,7 +29,7 @@ window.onload = function() {
             },
             antialias: false,
             pixelArt: true,
-            Scene: [TownScene, UIScene]
+            Scene: [TownScene]
         }
 
         game = new Phaser.Game(config);
@@ -51,6 +50,9 @@ class TownScene extends Phaser.Scene {
             frames: 24
         });
 
+        //add ui menu
+        this.load.image('ui_menu', "../assets/images/uiMain.png");
+
         //lets load the scene JSON
         this.load.image('base_tiles', '../PhaserEditor Files/assets/!CL_DEMO_48x48.png');
         this.load.tilemapTiledJSON('map', '../PhaserEditor Files/assets/townscene.json');
@@ -61,6 +63,9 @@ class TownScene extends Phaser.Scene {
 
         //create corrolation between up, down, left and right keys with the addition of space and shift and game
         cursors = this.input.keyboard.createCursorKeys();
+
+        //add the ui screen
+        const ui = this.add.sprite(400, 400, 'ui_menu');
 
         //load the scene
         let map = this.make.tilemap({ key: 'map' });

@@ -1,4 +1,5 @@
 import TILES from "./tile-mapping.js";
+import TownScene from "./townscene.js";
 
 //#region world properties
 let player;
@@ -30,13 +31,13 @@ window.onload = function() {
             }
         },
         antialias: false,
-        scene: [MainMenu, IntroScene]
+        scene: [MainMenu, IntroScene, TownScene]
     }
     game = new Phaser.Game(config);
     window.focus();
 }
 
-class MainMenu extends Phaser.Scene {
+export default class MainMenu extends Phaser.Scene {
 
     constructor() {
         super("MainMenu");
@@ -72,7 +73,6 @@ class MainMenu extends Phaser.Scene {
 
     }
 }
-export default MainMenu;
 
 function startGame() {
     game.scene.remove("MainMenu"); //remove (destroy) the open main menu scene
@@ -81,7 +81,7 @@ function startGame() {
 
 
 //#region Intro Scene
-class IntroScene extends Phaser.Scene {
+export class IntroScene extends Phaser.Scene {
         constructor() {
             super("IntroScene");
         }
@@ -155,7 +155,8 @@ class IntroScene extends Phaser.Scene {
                 doorLayer.setTileIndexCallback(TILES.DOOR, null);
                 camera.fade(250, 0, 0, 0);
                 camera.once("camerafadeoutcomplete", () => {
-                    this.scene.restart();
+                    this.scene.stop("IntroScene");
+                    this.scene.start("TownScene");
                 });
             });
             this.physics.add.overlap(player, doorLayer);
