@@ -1,5 +1,6 @@
 import TownScene from "./townscene.js";
 import IntroScene from "./intro.js";
+import PlayGame from './puzzleScene.js';
 
 let config;
 let game;
@@ -7,7 +8,7 @@ let game;
 
 function startGame() {
     game.scene.remove("MainMenu"); //remove (destroy) the open main menu scene
-    game.scene.start('IntroScene'); //open the new intro scene
+    game.scene.start(PlayGame); //open the new intro scene
 }
 
 

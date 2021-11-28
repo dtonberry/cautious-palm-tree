@@ -1,37 +1,58 @@
 let game;
+import IntroScene from './intro.js';
+import TownScene from './townscene.js';
+import MainMenu from './intro.js';
 
 let gameOptions = {
-    fieldSize: 7,
+    fieldSize: 10,
     gemColors: 6,
     gemSize: 100,
     swapSpeed: 200,
     fallSpeed: 100,
     destroySpeed: 200
 }
+
 const HORIZONTAL = 1;
 const VERTICAL = 2;
+let score = 100;
+let scoreText;
+let scoreLabel;
+
+let isCleared = false;
 window.onload = function() {
-    let gameConfig = {
-        width: 700,
-        height: 700,
-        scene: playGame,
+    config = {
+        type: Phaser.AUTO,
+        parent: 'game',
+        width: 800,
+        height: 600,
+        autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
+        physics: {
+            default: 'arcade',
+            arcade: {
+                gravity: {
+                    x: 0,
+                    y: 0
+                },
+                tileBias: 48
+            }
+        },
+        antialias: false,
+        scene: [MainMenu, IntroScene, TownScene, playGame]
     }
-    game = new Phaser.Game(gameConfig);
-    window.focus()
-    resize();
-    window.addEventListener("resize", resize, false);
+    game = new Phaser.Game(config);
+    window.focus();
 }
-class playGame extends Phaser.Scene{
-    constructor(){
+export default class playGame extends Phaser.Scene {
+    constructor() {
         super("PlayGame");
     }
-    preload(){
-        this.load.spritesheet("gems", "assets/sprites/gems.png", {
+    preload() {
+        this.load.spritesheet("gems", "../assets/sprites/gems.png", {
             frameWidth: gameOptions.gemSize,
             frameHeight: gameOptions.gemSize
         });
     }
-    create(){
+    create() {
         this.canPick = true;
         this.dragging = false;
         this.drawField();
@@ -39,17 +60,20 @@ class playGame extends Phaser.Scene{
         this.input.on("pointerdown", this.gemSelect, this);
         this.input.on("pointermove", this.startSwipe, this);
         this.input.on("pointerup", this.stopSwipe, this);
+
+        scoreLabel = this.add.text(20, 20, `Score: `);
+        scoreText = this.add.text(100, 20, `${score}`);
     }
-    drawField(){
+    drawField() {
         this.gameArray = [];
         this.poolArray = [];
         this.gemGroup = this.add.group();
-        for(let i = 0; i < gameOptions.fieldSize; i ++){
+        for (let i = 0; i < gameOptions.fieldSize; i++) {
             this.gameArray[i] = [];
-            for(let j = 0; j < gameOptions.fieldSize; j ++){
-                let gem = this.add.sprite(gameOptions.gemSize * j + gameOptions. gemSize / 2, gameOptions.gemSize * i + gameOptions.gemSize / 2, "gems");
+            for (let j = 0; j < gameOptions.fieldSize; j++) {
+                let gem = this.add.sprite(gameOptions.gemSize * j + gameOptions.gemSize / 2, gameOptions.gemSize * i + gameOptions.gemSize / 2, "gems");
                 this.gemGroup.add(gem);
-                do{
+                do {
                     let randomColor = Phaser.Math.Between(0, gameOptions.gemColors - 1);
                     gem.setFrame(randomColor);
                     this.gameArray[i][j] = {
@@ -57,48 +81,46 @@ class playGame extends Phaser.Scene{
                         gemSprite: gem,
                         isEmpty: false
                     }
-                } while(this.isMatch(i, j));
+                } while (this.isMatch(i, j));
             }
         }
     }
-    isMatch(row, col){
-         return this.isHorizontalMatch(row, col) || this.isVerticalMatch(row, col);
+    isMatch(row, col) {
+        return this.isHorizontalMatch(row, col) || this.isVerticalMatch(row, col);
     }
-    isHorizontalMatch(row, col){
-         return this.gemAt(row, col).gemColor == this.gemAt(row, col - 1).gemColor && this.gemAt(row, col).gemColor == this.gemAt(row, col - 2).gemColor;
+    isHorizontalMatch(row, col) {
+        return this.gemAt(row, col).gemColor == this.gemAt(row, col - 1).gemColor && this.gemAt(row, col).gemColor == this.gemAt(row, col - 2).gemColor;
     }
-    isVerticalMatch(row, col){
-         return this.gemAt(row, col).gemColor == this.gemAt(row - 1, col).gemColor && this.gemAt(row, col).gemColor == this.gemAt(row - 2, col).gemColor;
+    isVerticalMatch(row, col) {
+        return this.gemAt(row, col).gemColor == this.gemAt(row - 1, col).gemColor && this.gemAt(row, col).gemColor == this.gemAt(row - 2, col).gemColor;
+        score += 100;
     }
-    gemAt(row, col){
-        if(row < 0 || row >= gameOptions.fieldSize || col < 0 || col >= gameOptions.fieldSize){
+    gemAt(row, col) {
+        if (row < 0 || row >= gameOptions.fieldSize || col < 0 || col >= gameOptions.fieldSize) {
             return -1;
         }
         return this.gameArray[row][col];
     }
-    gemSelect(pointer){
-        if(this.canPick){
+    gemSelect(pointer) {
+        if (this.canPick) {
             this.dragging = true;
             let row = Math.floor(pointer.y / gameOptions.gemSize);
             let col = Math.floor(pointer.x / gameOptions.gemSize);
             let pickedGem = this.gemAt(row, col)
-            if(pickedGem != -1){
-                if(this.selectedGem == null){
+            if (pickedGem != -1) {
+                if (this.selectedGem == null) {
                     pickedGem.gemSprite.setScale(1.2);
                     pickedGem.gemSprite.setDepth(1);
                     this.selectedGem = pickedGem;
-                }
-                else{
-                    if(this.areTheSame(pickedGem, this.selectedGem)){
+                } else {
+                    if (this.areTheSame(pickedGem, this.selectedGem)) {
                         this.selectedGem.gemSprite.setScale(1);
                         this.selectedGem = null;
-                    }
-                    else{
-                        if(this.areNext(pickedGem, this.selectedGem)){
+                    } else {
+                        if (this.areNext(pickedGem, this.selectedGem)) {
                             this.selectedGem.gemSprite.setScale(1);
                             this.swapGems(this.selectedGem, pickedGem, true);
-                        }
-                        else{
+                        } else {
                             this.selectedGem.gemSprite.setScale(1);
                             pickedGem.gemSprite.setScale(1.2);
                             this.selectedGem = pickedGem;
@@ -108,27 +130,27 @@ class playGame extends Phaser.Scene{
             }
         }
     }
-    startSwipe(pointer){
-        if(this.dragging && this.selectedGem != null){
+    startSwipe(pointer) {
+        if (this.dragging && this.selectedGem != null) {
             let deltaX = pointer.downX - pointer.x;
             let deltaY = pointer.downY - pointer.y;
             let deltaRow = 0;
             let deltaCol = 0;
-            if(deltaX > gameOptions.gemSize / 2 && Math.abs(deltaY) < gameOptions.gemSize / 4){
+            if (deltaX > gameOptions.gemSize / 2 && Math.abs(deltaY) < gameOptions.gemSize / 4) {
                 deltaCol = -1;
             }
-            if(deltaX < -gameOptions.gemSize / 2 && Math.abs(deltaY) < gameOptions.gemSize / 4){
+            if (deltaX < -gameOptions.gemSize / 2 && Math.abs(deltaY) < gameOptions.gemSize / 4) {
                 deltaCol = 1;
             }
-            if(deltaY > gameOptions.gemSize / 2 && Math.abs(deltaX) < gameOptions.gemSize / 4){
+            if (deltaY > gameOptions.gemSize / 2 && Math.abs(deltaX) < gameOptions.gemSize / 4) {
                 deltaRow = -1;
             }
-            if(deltaY < -gameOptions.gemSize / 2 && Math.abs(deltaX) < gameOptions.gemSize / 4){
+            if (deltaY < -gameOptions.gemSize / 2 && Math.abs(deltaX) < gameOptions.gemSize / 4) {
                 deltaRow = 1;
             }
-            if(deltaRow + deltaCol != 0){
+            if (deltaRow + deltaCol != 0) {
                 let pickedGem = this.gemAt(this.getGemRow(this.selectedGem) + deltaRow, this.getGemCol(this.selectedGem) + deltaCol);
-                if(pickedGem != -1){
+                if (pickedGem != -1) {
                     this.selectedGem.gemSprite.setScale(1);
                     this.swapGems(this.selectedGem, pickedGem, true);
                     this.dragging = false;
@@ -136,22 +158,22 @@ class playGame extends Phaser.Scene{
             }
         }
     }
-    stopSwipe(){
+    stopSwipe() {
         this.dragging = false;
     }
-    areTheSame(gem1, gem2){
+    areTheSame(gem1, gem2) {
         return this.getGemRow(gem1) == this.getGemRow(gem2) && this.getGemCol(gem1) == this.getGemCol(gem2);
     }
-    getGemRow(gem){
+    getGemRow(gem) {
         return Math.floor(gem.gemSprite.y / gameOptions.gemSize);
     }
-    getGemCol(gem){
+    getGemCol(gem) {
         return Math.floor(gem.gemSprite.x / gameOptions.gemSize);
     }
-    areNext(gem1, gem2){
+    areNext(gem1, gem2) {
         return Math.abs(this.getGemRow(gem1) - this.getGemRow(gem2)) + Math.abs(this.getGemCol(gem1) - this.getGemCol(gem2)) == 1;
     }
-    swapGems(gem1, gem2, swapBack){
+    swapGems(gem1, gem2, swapBack) {
         this.swappingGems = 2;
         this.canPick = false;
         let fromColor = gem1.gemColor;
@@ -169,7 +191,7 @@ class playGame extends Phaser.Scene{
         this.tweenGem(gem1, gem2, swapBack);
         this.tweenGem(gem2, gem1, swapBack);
     }
-    tweenGem(gem1, gem2, swapBack){
+    tweenGem(gem1, gem2, swapBack) {
         let row = this.getGemRow(gem1);
         let col = this.getGemCol(gem1);
         this.tweens.add({
@@ -178,17 +200,15 @@ class playGame extends Phaser.Scene{
             y: row * gameOptions.gemSize + gameOptions.gemSize / 2,
             duration: gameOptions.swapSpeed,
             callbackScope: this,
-            onComplete: function(){
-                this.swappingGems --;
-                if(this.swappingGems == 0){
-                    if(!this.matchInBoard() && swapBack){
+            onComplete: function() {
+                this.swappingGems--;
+                if (this.swappingGems == 0) {
+                    if (!this.matchInBoard() && swapBack) {
                         this.swapGems(gem1, gem2, false);
-                    }
-                    else{
-                        if(this.matchInBoard()){
+                    } else {
+                        if (this.matchInBoard()) {
                             this.handleMatches();
-                        }
-                        else{
+                        } else {
                             this.canPick = true;
                             this.selectedGem = null;
                         }
@@ -197,58 +217,69 @@ class playGame extends Phaser.Scene{
             }
         });
     }
-    matchInBoard(){
-        for(let i = 0; i < gameOptions.fieldSize; i ++){
-            for(let j = 0; j < gameOptions.fieldSize; j ++){
-                if(this.isMatch(i, j)){
+    matchInBoard() {
+        for (let i = 0; i < gameOptions.fieldSize; i++) {
+            for (let j = 0; j < gameOptions.fieldSize; j++) {
+                if (this.isMatch(i, j)) {
                     return true;
                 }
             }
         }
         return false;
     }
-    handleMatches(){
+
+    update() {
+        scoreText.setText(score);
+        // if (score >= 120) {
+        //     isCleared = true;
+        // }
+        // if (isCleared === true) {
+        //     cleared();
+        // }
+    }
+
+
+
+    handleMatches() {
         this.removeMap = [];
-        for(let i = 0; i < gameOptions.fieldSize; i ++){
+        for (let i = 0; i < gameOptions.fieldSize; i++) {
             this.removeMap[i] = [];
-            for(let j = 0; j < gameOptions.fieldSize; j ++){
+            for (let j = 0; j < gameOptions.fieldSize; j++) {
                 this.removeMap[i].push(0);
             }
         }
         this.markMatches(HORIZONTAL);
         this.markMatches(VERTICAL);
         this.destroyGems();
+        score = score + 10;
     }
-    markMatches(direction){
-        for(let i = 0; i < gameOptions.fieldSize; i ++){
+    markMatches(direction) {
+        for (let i = 0; i < gameOptions.fieldSize; i++) {
             let colorStreak = 1;
             let currentColor = -1;
             let startStreak = 0;
             let colorToWatch = 0;
-            for(let j = 0; j < gameOptions.fieldSize; j ++){
-                if(direction == HORIZONTAL){
+            for (let j = 0; j < gameOptions.fieldSize; j++) {
+                if (direction == HORIZONTAL) {
                     colorToWatch = this.gemAt(i, j).gemColor;
-                }
-                else{
+                } else {
                     colorToWatch = this.gemAt(j, i).gemColor;
                 }
-                if(colorToWatch == currentColor){
-                    colorStreak ++;
+                if (colorToWatch == currentColor) {
+                    colorStreak++;
                 }
-                if(colorToWatch != currentColor || j == gameOptions.fieldSize - 1){
-                    if(colorStreak >= 3){
-                        if(direction == HORIZONTAL){
+                if (colorToWatch != currentColor || j == gameOptions.fieldSize - 1) {
+                    if (colorStreak >= 3) {
+                        if (direction == HORIZONTAL) {
                             console.log("HORIZONTAL :: Length = " + colorStreak + " :: Start = (" + i + "," + startStreak + ") :: Color = " + currentColor);
-                        }
-                        else{
+                        } else {
                             console.log("VERTICAL :: Length = " + colorStreak + " :: Start = (" + startStreak + "," + i + ") :: Color = " + currentColor);
                         }
-                        for(let k = 0; k < colorStreak; k ++){
-                            if(direction == HORIZONTAL){
-                                this.removeMap[i][startStreak + k] ++;
-                            }
-                            else{
-                                this.removeMap[startStreak + k][i] ++;
+                        for (let k = 0; k < colorStreak; k++) {
+                            if (direction == HORIZONTAL) {
+                                this.removeMap[i][startStreak + k]++;
+                            } else {
+                                this.removeMap[startStreak + k][i]++;
                             }
                         }
                     }
@@ -259,22 +290,22 @@ class playGame extends Phaser.Scene{
             }
         }
     }
-    destroyGems(){
+    destroyGems() {
         let destroyed = 0;
-        for(let i = 0; i < gameOptions.fieldSize; i ++){
-            for(let j = 0; j < gameOptions.fieldSize; j ++){
-                if(this.removeMap[i][j] > 0){
-                    destroyed ++;
+        for (let i = 0; i < gameOptions.fieldSize; i++) {
+            for (let j = 0; j < gameOptions.fieldSize; j++) {
+                if (this.removeMap[i][j] > 0) {
+                    destroyed++;
                     this.tweens.add({
                         targets: this.gameArray[i][j].gemSprite,
                         alpha: 0.5,
                         duration: gameOptions.destroySpeed,
                         callbackScope: this,
-                        onComplete: function(){
-                            destroyed --;
+                        onComplete: function() {
+                            destroyed--;
                             this.gameArray[i][j].gemSprite.visible = false;
                             this.poolArray.push(this.gameArray[i][j].gemSprite);
-                            if(destroyed == 0){
+                            if (destroyed == 0) {
                                 this.makeGemsFall();
                                 this.replenishField();
                             }
@@ -285,12 +316,12 @@ class playGame extends Phaser.Scene{
             }
         }
     }
-    makeGemsFall(){
-        for(let i = gameOptions.fieldSize - 2; i >= 0; i --){
-            for(let j = 0; j < gameOptions.fieldSize; j ++){
-                if(!this.gameArray[i][j].isEmpty){
+    makeGemsFall() {
+        for (let i = gameOptions.fieldSize - 2; i >= 0; i--) {
+            for (let j = 0; j < gameOptions.fieldSize; j++) {
+                if (!this.gameArray[i][j].isEmpty) {
                     let fallTiles = this.holesBelow(i, j);
-                    if(fallTiles > 0){
+                    if (fallTiles > 0) {
                         this.tweens.add({
                             targets: this.gameArray[i][j].gemSprite,
                             y: this.gameArray[i][j].gemSprite.y + fallTiles * gameOptions.gemSize,
@@ -307,22 +338,22 @@ class playGame extends Phaser.Scene{
             }
         }
     }
-    holesBelow(row, col){
+    holesBelow(row, col) {
         let result = 0;
-        for(let i = row + 1; i < gameOptions.fieldSize; i ++){
-            if(this.gameArray[i][col].isEmpty){
-                result ++;
+        for (let i = row + 1; i < gameOptions.fieldSize; i++) {
+            if (this.gameArray[i][col].isEmpty) {
+                result++;
             }
         }
         return result;
     }
-    replenishField(){
+    replenishField() {
         let replenished = 0;
-        for(let j = 0; j < gameOptions.fieldSize; j ++){
+        for (let j = 0; j < gameOptions.fieldSize; j++) {
             let emptySpots = this.holesInCol(j);
-            if(emptySpots > 0){
-                for(let i = 0; i < emptySpots; i ++){
-                    replenished ++;
+            if (emptySpots > 0) {
+                for (let i = 0; i < emptySpots; i++) {
+                    replenished++;
                     let randomColor = Phaser.Math.Between(0, gameOptions.gemColors - 1);
                     this.gameArray[i][j].gemColor = randomColor;
                     this.gameArray[i][j].gemSprite = this.poolArray.pop()
@@ -337,16 +368,15 @@ class playGame extends Phaser.Scene{
                         y: gameOptions.gemSize * i + gameOptions.gemSize / 2,
                         duration: gameOptions.fallSpeed * emptySpots,
                         callbackScope: this,
-                        onComplete: function(){
-                            replenished --;
-                            if(replenished == 0){
-                                if(this.matchInBoard()){
+                        onComplete: function() {
+                            replenished--;
+                            if (replenished == 0) {
+                                if (this.matchInBoard()) {
                                     this.time.addEvent({
                                         delay: 250,
                                         callback: this.handleMatches()
                                     });
-                                }
-                                else{
+                                } else {
                                     this.canPick = true;
                                     this.selectedGem = null;
                                 }
@@ -357,26 +387,32 @@ class playGame extends Phaser.Scene{
             }
         }
     }
-    holesInCol(col){
+    holesInCol(col) {
         var result = 0;
-        for(let i = 0; i < gameOptions.fieldSize; i ++){
-            if(this.gameArray[i][col].isEmpty){
-                result ++;
+        for (let i = 0; i < gameOptions.fieldSize; i++) {
+            if (this.gameArray[i][col].isEmpty) {
+                result++;
             }
         }
         return result;
     }
-}function resize() {
+}
+
+function cleared() {
+    game.scene.remove("PlayGame");
+    game.scene.start("IntroScene");
+}
+
+function resize() {
     var canvas = document.querySelector("canvas");
     var windowWidth = window.innerWidth;
     var windowHeight = window.innerHeight;
     var windowRatio = windowWidth / windowHeight;
     var gameRatio = game.config.width / game.config.height;
-    if(windowRatio < gameRatio){
+    if (windowRatio < gameRatio) {
         canvas.style.width = windowWidth + "px";
         canvas.style.height = (windowWidth / gameRatio) + "px";
-    }
-    else{
+    } else {
         canvas.style.width = (windowHeight * gameRatio) + "px";
         canvas.style.height = windowHeight + "px";
     }
