@@ -1,6 +1,7 @@
 import TILES from "./tile-mapping.js";
 import TownScene from "./townscene.js";
-import PlayGame from "./puzzleScene.js"
+import PlayGame from "./puzzleScene.js";
+import IntroCutscene from "./introCutscene.js";
 
 //#region world properties
 let player;
@@ -10,8 +11,11 @@ let anims;
 let enemies;
 let game;
 let config;
+let dialog;
 let music;
 let doorOpen = false;
+let reddoor;
+let inventory = [""];
 //#endregion
 
 window.onload = function() {
@@ -32,7 +36,7 @@ window.onload = function() {
             }
         },
         antialias: false,
-        scene: [MainMenu, IntroScene, TownScene, PlayGame]
+        scene: [MainMenu, IntroScene, TownScene, PlayGame, IntroCutscene]
     }
     game = new Phaser.Game(config);
     window.focus();
@@ -77,154 +81,175 @@ export default class MainMenu extends Phaser.Scene {
 
 function startGame() {
     game.scene.remove("MainMenu"); //remove (destroy) the open main menu scene
-    game.scene.start('PlayGame'); //open the new intro scene
+    game.scene.start('IntroCutscene'); //open the new intro scene
 }
 
 
 //#region Intro Scene
 export class IntroScene extends Phaser.Scene {
-        constructor() {
-            super("IntroScene");
-        }
+    constructor() {
+        super("IntroScene");
+    }
 
 
-        preload() {
-            this.load.spritesheet('player', '../assets/sprites/characterSpritesheet.png', {
-                frameWidth: 16,
-                frameHeight: 16,
-                frames: 24
-            }); //this loads our character spritesheet
-            this.load.spritesheet('enemies', '../assets/sprites/dude.png', {
-                frameWidth: 32,
-                frameHeight: 48,
-                frames: 9
-            }); //this loads out enemies spritesheet
+    preload() {
+        //#region importing spritesheets
+        this.load.spritesheet('player', '../assets/sprites/Player Sprites/player.png', {
+            frameWidth: 32,
+            frameHeight: 32,
+            frames: 12
+        }); //this loads our character spritesheet
+        this.load.spritesheet('enemies', '../assets/sprites/dude.png', {
+            frameWidth: 32,
+            frameHeight: 48,
+            frames: 9
+        }); //this loads out enemies spritesheet
 
-            //lets load the actually scene JSON
-            this.load.image('base_tiles', '../PhaserEditor Files/assets/!CL_DEMO_48x48.png');
-            this.load.tilemapTiledJSON('tilemap', '../PhaserEditor Files/assets/introscene.json');
-        }
+        //lets load the actually scene JSON
+        this.load.image('base_tiles', '../PhaserEditor Files/assets/!CL_DEMO_48x48.png');
+        this.load.tilemapTiledJSON('tilemap', '../PhaserEditor Files/assets/introscene.json');
+        this.anims.remove('forward');
+        this.anims.remove('backward');
+        this.anims.remove('left');
+        this.anims.remove('right');
+    }
 
-        create() {
+    create() {
+        let camera = this.cameras.main; //initialize the camera
 
-            let camera = this.cameras.main; //initialize the camera
+        //create corrolation between up, down, left and right keys with the addition of space and shift and game
+        cursors = this.input.keyboard.createCursorKeys();
 
-            //create corrolation between up, down, left and right keys with the addition of space and shift and game
-            cursors = this.input.keyboard.createCursorKeys();
+        //load the scene
+        let map = this.make.tilemap({ key: 'tilemap' });
+        let tileset = map.addTilesetImage('!CL_DEMO_48x48', 'base_tiles');
 
-            //load the scene
-            let map = this.make.tilemap({ key: 'tilemap' });
-            let tileset = map.addTilesetImage('!CL_DEMO_48x48', 'base_tiles');
+        //set the world bounds to the edge of the camera
+        //set the world to 30 fps so that we don't eat up too much CPU
+        this.physics.world.setFPS(30);
+        this.physics.world.setBounds(0, 0, map.x, camera.y - map.y);
 
-            //set the world bounds to the edge of the camera
-            //set the world to 30 fps so that we don't eat up too much CPU
-            this.physics.world.setFPS(30);
-            this.physics.world.setBounds(0, 0, map.x, camera.y - map.y);
+        //create layers
+        let baseLayer = map.createLayer('base', tileset, 0, 0);
+        let furnitureLayer = map.createLayer('furniture', tileset, 0, 0);
+        let doorLayer = map.createLayer('door', tileset, 0, 0);
 
-            //create layers
-            let baseLayer = map.createLayer('base', tileset, 0, 0);
-            let furnitureLayer = map.createLayer('furniture', tileset, 0, 0);
-            let doorLayer = map.createLayer('door', tileset, 0, 0);
+        //#region player
+        player = this.physics.add
+            .sprite(400, 450, "player"); //load the player sprite
+        player.setScale(2); //fit the sprite to the background
+        player.body.setCollideWorldBounds(true, 1, 1);
+        player.setBounce(1);
+        //#endregion
 
-            //#region player
-            player = this.physics.add
-                .sprite(400, 450, "player"); //load the player sprite
-            player.setScale(3); //fit the sprite to the background
-            player.body.setCollideWorldBounds(true, 1, 1);
-            player.setBounce(1);
+        //set up camera so that you can't move outside the tilemap
+        camera.startFollow(player);
+        camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+
+        //we need some physics, can't have everyone overlapping
+        furnitureLayer.setCollisionByProperty({ collides: true });
+        baseLayer.setCollisionByProperty({ collides: true });
+        //add collision for furniture layer
+        let furnCollider = this.physics.add.collider(player, furnitureLayer, () => console.log("collided"), null, this);
+        //add collision for base layer
+        this.physics.add.collider(player, baseLayer, () => console.log("collided"), null, this);
+
+        //debug to check player hitbox
+        // this.input.keyboard.once("keydown-D", event => {
+        //     inventory.push("red")
+        // });
+
+        //check if player is at the door
+        doorLayer.setTileIndexCallback(TILES.DOOR, () => {
+            doorLayer.setTileIndexCallback(TILES.DOOR, null);
+            camera.fade(250, 0, 0, 0);
+            camera.once("camerafadeoutcomplete", () => {
+                this.scene.stop("IntroScene");
+                this.scene.start("TownScene");
+            });
+        });
+        this.physics.add.overlap(player, doorLayer);
+
+
+        //#region animations
+        //set some animations
+
+        //move forward animation
+        this.anims.create({
+            key: 'forward',
+            frames: this.anims.generateFrameNumbers('player', { frames: [9, 10, 11, 10] })
+        })
+
+        //move back animation
+        this.anims.create({
+            key: 'backward',
+            frames: this.anims.generateFrameNumbers('player', { frames: [0, 1, 2, 1] })
+        })
+
+        //move left animation
+        this.anims.create({
+            key: 'left',
+            frames: this.anims.generateFrameNumbers('player', { frames: [3, 4, 5, 4] })
+        })
+
+        //move right animation
+        this.anims.create({
+                key: 'right',
+                frames: this.anims.generateFrameNumbers('player', { frames: [6, 7, 8, 7] })
+            })
             //#endregion
-
-            //set up camera so that you can't move outside the tilemap
-            camera.startFollow(player);
-            camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-
-            //we need some physics, can't have everyone overlapping
-            furnitureLayer.setCollisionByProperty({ collides: true });
-            baseLayer.setCollisionByProperty({ collides: true });
-            //add collision for furniture layer
-            this.physics.add.collider(player, furnitureLayer, () => console.log("collided"), null, this);
-            //add collision for base layer
-            this.physics.add.collider(player, baseLayer, () => console.log("collided"), null, this);
-
-            //debug to check player hitbox
-            this.input.keyboard.once("keydown-D", event => {
-                this.physics.world.createDebugGraphic();
-            });
-
-            //check if player is at the door
-            doorLayer.setTileIndexCallback(TILES.DOOR, () => {
-                doorLayer.setTileIndexCallback(TILES.DOOR, null);
-                camera.fade(250, 0, 0, 0);
-                camera.once("camerafadeoutcomplete", () => {
-                    this.scene.stop("IntroScene");
-                    this.scene.start("TownScene");
-                });
-            });
-            this.physics.add.overlap(player, doorLayer);
+    }
 
 
-            //#region animations
-            //set some animations
 
-            //move forward animation
-            this.anims.create({
-                key: 'forward',
-                frames: this.anims.generateFrameNumbers('player', { frames: [18, 19, 20] })
-            })
 
-            //move back animation
-            this.anims.create({
-                key: 'backward',
-                frames: this.anims.generateFrameNumbers('player', { frames: [0, 1, 2] })
-            })
+    update() {
+        player.body.setVelocity(0);
 
-            //move left animation
-            this.anims.create({
-                key: 'left',
-                frames: this.anims.generateFrameNumbers('player', { frames: [6, 7, 8] })
-            })
+        // inventory.forEach(function(item, keyColor) {
+        //     if (item == `${keyColor}`) {
+        //         RemoveBody(`${keyColor}door`);
+        //     }
+        // })
 
-            //move right animation
-            this.anims.create({
-                    key: 'right',
-                    frames: this.anims.generateFrameNumbers('player', { frames: [12, 13, 14] })
-                })
-                //#endregion
+        // //if spacebar is pressed
+        // if (cursors.space.isDown) {
+        //     this.physics.world.removeCollider(this.randomCollider);
+        // }
+
+        //if left arrow is pressed
+        if (cursors.left.isDown) {
+            player.body.setVelocityX(-100);
+            player.anims.play('left', true);
+            player.anims.msPerFrame = 100;
+        }
+        //if right arrow is down
+        else if (cursors.right.isDown) {
+            player.body.setVelocityX(100);
+            player.anims.play('right', true);
+            player.anims.msPerFrame = 100;
         }
 
-        update() {
-            player.body.setVelocity(0);
-
-            //if spacebar is pressed
-            if (cursors.space.isDown) {
-                player.anims.play('attack', true);
-            }
-
-            //if left arrow is pressed
-            if (cursors.left.isDown) {
-                player.body.setVelocityX(-100);
-                player.anims.play('left', true);
-                player.anims.msPerFrame = 100;
-            }
-            //if right arrow is down
-            else if (cursors.right.isDown) {
-                player.body.setVelocityX(100);
-                player.anims.play('right', true);
-                player.anims.msPerFrame = 100;
-            }
-
-            //if up arrow is down
-            if (cursors.up.isDown) {
-                player.body.setVelocityY(-100);
-                player.anims.play('forward', true);
-                player.anims.msPerFrame = 100;
-            }
-            //if down arrow is down
-            else if (cursors.down.isDown) {
-                player.body.setVelocityY(100);
-                player.anims.play('backward', true);
-                player.anims.msPerFrame = 100;
-            }
+        //if up arrow is down
+        if (cursors.up.isDown) {
+            player.body.setVelocityY(-100);
+            player.anims.play('forward', true);
+            player.anims.msPerFrame = 100;
+        }
+        //if down arrow is down
+        else if (cursors.down.isDown) {
+            player.body.setVelocityY(100);
+            player.anims.play('backward', true);
+            player.anims.msPerFrame = 100;
         }
     }
-    //#endregion
+}
+
+
+//#endregion
+
+// function RemoveBody(object) {
+//     if (object.body.enable == false) {
+//         object.body.enable = true;
+//     }
+// }

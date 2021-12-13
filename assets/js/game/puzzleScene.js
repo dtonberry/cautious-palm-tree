@@ -4,7 +4,7 @@ import TownScene from './townscene.js';
 import MainMenu from './intro.js';
 
 let gameOptions = {
-    fieldSize: 10,
+    fieldSize: 6,
     gemColors: 6,
     gemSize: 100,
     swapSpeed: 200,
@@ -19,30 +19,8 @@ let scoreText;
 let scoreLabel;
 
 let isCleared = false;
-window.onload = function() {
-    config = {
-        type: Phaser.AUTO,
-        parent: 'game',
-        width: 800,
-        height: 600,
-        autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
-        physics: {
-            default: 'arcade',
-            arcade: {
-                gravity: {
-                    x: 0,
-                    y: 0
-                },
-                tileBias: 48
-            }
-        },
-        antialias: false,
-        scene: [MainMenu, IntroScene, TownScene, playGame]
-    }
-    game = new Phaser.Game(config);
-    window.focus();
-}
-export default class playGame extends Phaser.Scene {
+
+export default class PlayGame extends Phaser.Scene {
     constructor() {
         super("PlayGame");
     }
@@ -230,15 +208,17 @@ export default class playGame extends Phaser.Scene {
 
     update() {
         scoreText.setText(score);
-        // if (score >= 120) {
-        //     isCleared = true;
-        // }
-        // if (isCleared === true) {
-        //     cleared();
-        // }
+        this.HandleComplete();
     }
 
 
+    HandleComplete() {
+        if (scoreText.text >= 120) {
+            isCleared = true;
+            this.scene.remove(PlayGame);
+            this.scene.start("IntroScene");
+        }
+    }
 
     handleMatches() {
         this.removeMap = [];
@@ -398,10 +378,6 @@ export default class playGame extends Phaser.Scene {
     }
 }
 
-function cleared() {
-    game.scene.remove("PlayGame");
-    game.scene.start("IntroScene");
-}
 
 function resize() {
     var canvas = document.querySelector("canvas");

@@ -47,7 +47,7 @@ class TownScene extends Phaser.Scene {
         this.load.spritesheet('player', '../assets/sprites/characterSpritesheet.png', {
             frameWidth: 16,
             frameHeight: 16,
-            frames: 24
+            frames: 12
         });
 
         //add ui menu
@@ -85,7 +85,7 @@ class TownScene extends Phaser.Scene {
         //spawn in the player
         player = this.physics.add
             .sprite(400, 450, "player");
-        player.setScale(3);
+        player.setScale(2);
         player.body.setCollideWorldBounds(true, 1, 1);
         player.setBounce(1);
 
@@ -122,25 +122,25 @@ class TownScene extends Phaser.Scene {
         //move forward animation
         this.anims.create({
             key: 'forward',
-            frames: this.anims.generateFrameNumbers('player', { frames: [18, 19, 20] })
+            frames: this.anims.generateFrameNumbers('player', { frames: [9, 10, 11, 10] })
         })
 
         //move back animation
         this.anims.create({
             key: 'backward',
-            frames: this.anims.generateFrameNumbers('player', { frames: [0, 1, 2] })
+            frames: this.anims.generateFrameNumbers('player', { frames: [0, 1, 2, 1] })
         })
 
         //move left animation
         this.anims.create({
             key: 'left',
-            frames: this.anims.generateFrameNumbers('player', { frames: [6, 7, 8] })
+            frames: this.anims.generateFrameNumbers('player', { frames: [3, 4, 5, 4] })
         })
 
         //move right animation
         this.anims.create({
                 key: 'right',
-                frames: this.anims.generateFrameNumbers('player', { frames: [12, 13, 14] })
+                frames: this.anims.generateFrameNumbers('player', { frames: [6, 7, 8, 7] })
             })
             //#endregion
     }
