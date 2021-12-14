@@ -19,7 +19,7 @@
 
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+        <nav id="content-desktop" class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
 
             <div class="container-fluid">
                 <ul class="navbar-nav">
@@ -42,6 +42,23 @@
                 </ul>
             </div>
         </nav>
+        <nav id="content-mobile" class="top-nav">
+
+            <a href="javascript:void(0);" class="icon" onclick="burgerFunction()">
+                <i class="fa fa-bars"></i></a>
+            <div id="myLinks" style="display: none;">
+                <a class="nav-link" style="padding-left: 50px;" href='index.html'>Home</a>
+                <a class="nav-link" style="padding-left: 50px;" href='about_us.html'>About Us</a>
+                <a class="nav-link" style="padding-left: 50px;" href='contact_us.html'>Contact Us</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" style="padding-left: 50px;" href='#' role="button" data-bs-toggle="dropdown">Game</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href='game.html'>Play Game</a></li>
+                        <li><a class="dropdown-item" href='#'>How to Play</a></li>
+                        <li><a class="dropdown-item" href='about_the_game.html'>About the Game</a></li>
+                    </ul>
+            </div>
+        </nav>
     </header>
 
     <div class="hero-image">
@@ -49,7 +66,7 @@
         </div>
     </div>
     <br>
-    <div class="card" style="width: 80rem; margin: 0 auto;">
+    <div class="card" id="content-desktop" style="width: 80rem; margin: 0 auto;">
         <h3 class="tales_of_adventure_preview_text">Our Mission Statement</h3>
         <p class="tales_of_adventure_preview_text">
             We are a Web Development team and students at the University of the West of Scotland.
@@ -85,8 +102,31 @@
             </div>
         </p>
     </div>
+    <button type="button" id="content-mobile" class="collapsible">Learn about Mark</button>
+    <div class="content" id="content-mobile">
+        <p>Hello! My name is Mark Clyne! You can find me on Discord where I am the most active.</p>
+        <a class="btn btn-primary" style="background-color: #55acee;" target="_blank" href="https://twitter.com/DonberryTonbrry">
+            <i class="fab fa-twitter"></i>
+        </a>
+        <a class="btn btn-primary" style="background-color: #0082ca;" target="_blank" href="https://www.linkedin.com/in/mark-clyne-171063222/">
+            <i class="fab fa-linkedin"></i>
+        </a>
+        <a class="btn btn-primary" style="background-color: #0082ca;" target="_blank" href="https://discordapp.com/users/64543775518625792">
+            <i class="fab fa-discord"></i>
+        </a>
+    </div>
+    <button type="button" id="content-mobile" class="collapsible">Learn about Aimee</button>
+    <div class="content" id="content-mobile">
+        <p>Hello! My name is Aimee Lennon!</p>
+        <a class="btn btn-primary" style="background-color: #0082ca;" target="_blank" href="https://www.linkedin.com/in/aim%C3%A9e-elizabeth-lennon-4a54b61ba/">
+            <i class="fab fa-linkedin"></i>
+        </a>
+        <a class="btn btn-primary" style="background-color: #0082ca;" target="_blank" href="https://discordapp.com/users/417764518811271168">
+            <i class="fab fa-discord"></i>
+        </a>
+    </div>
     <br><br><br>
-    <footer id="footer" class="footer-1">
+    <footer class="footer-1">
         <div class="main-footer widgets-dark typo-light">
             <div class="container">
                 <div class="row">
@@ -114,4 +154,6 @@
     </footer>
     <button onclick="topFunction()" id="myBtn" title="Go to top">Top</button>
     <script src="../assets/js/web/button.js"></script>
+    <script src="../assets/js/web/collapsible.js"></script>
+    <script src="../assets/js/web/burgerbutton.js"></script>
 </body>

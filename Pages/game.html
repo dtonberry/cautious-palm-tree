@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script defer src="../node_modules/@fortawesome/fontawesome-free/js/brands.js"></script>
+    <script defer src="../node_modules/@fortawesome/fontawesome-free/js/solid.js"></script>
+    <script defer src="../node_modules/@fortawesome/fontawesome-free/js/fontawesome.js"></script>
     <link href="../assets/css/style.css" rel="stylesheet">
 
     <script src="../node_modules/phaser/dist/phaser.min.js"></script>
@@ -20,7 +23,7 @@
 
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <nav id="content-desktop" class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
 
             <div class="container-fluid">
                 <ul class="navbar-nav">
@@ -43,11 +46,35 @@
                 </ul>
             </div>
         </nav>
+        <nav id="content-mobile" class="top-nav">
+
+            <a href="javascript:void(0);" class="icon" onclick="burgerFunction()">
+                <i class="fa fa-bars"></i></a>
+            <div id="myLinks" style="display: none;">
+                <a class="nav-link" style="padding-left: 50px;" href='index.html'>Home</a>
+                <a class="nav-link" style="padding-left: 50px;" href='about_us.html'>About Us</a>
+                <a class="nav-link" style="padding-left: 50px;" href='contact_us.html'>Contact Us</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" style="padding-left: 50px;" href='#' role="button" data-bs-toggle="dropdown">Game</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href='game.html'>Play Game</a></li>
+                        <li><a class="dropdown-item" href='#'>How to Play</a></li>
+                        <li><a class="dropdown-item" href='about_the_game.html'>About the Game</a></li>
+                    </ul>
+            </div>
+        </nav>
     </header>
     <div class="hero-image">
         <div class="hero-text">
         </div>
     </div>
+    <div id="game">
+
+    </div>
+    <div id="content-mobile">
+        <div id="gameWarning" style="margin-left: 120px; color:white;">Please use landscape</div>
+    </div>
     <button onclick="topFunction()" id="myBtn" title="Go to top">Top</button>
     <script src="../assets/js/web/button.js"></script>
+    <script src="../assets/js/web/burgerbutton.js"></script>
 </body>
