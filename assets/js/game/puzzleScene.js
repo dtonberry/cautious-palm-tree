@@ -2,6 +2,7 @@ let game;
 import IntroScene from './intro.js';
 import TownScene from './townscene.js';
 import MainMenu from './intro.js';
+import HouseScene from './houseScene.js';
 
 let gameOptions = {
     fieldSize: 6,
@@ -30,7 +31,7 @@ export default class PlayGame extends Phaser.Scene {
             frameHeight: gameOptions.gemSize
         });
     }
-    create() {
+    create(data) {
         this.canPick = true;
         this.dragging = false;
         this.drawField();
@@ -215,8 +216,9 @@ export default class PlayGame extends Phaser.Scene {
     HandleComplete() {
         if (scoreText.text >= 120) {
             isCleared = true;
-            this.scene.remove(PlayGame);
-            this.scene.start("IntroScene");
+            localStorage.setItem("QuestAccepted", 1);
+            this.scene.switch("HouseScene");
+            scoreText.text = 0;
         }
     }
 

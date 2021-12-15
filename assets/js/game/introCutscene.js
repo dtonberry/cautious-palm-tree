@@ -93,7 +93,7 @@ export default class IntroCutscene extends Phaser.Scene {
                 frames: this.anims.generateFrameNumbers('sultanate', { frames: [6, 7, 8, 7, 6] })
             })
             //#endregion
-        text = this.add.text(400, 300, '');
+
 
     }
 

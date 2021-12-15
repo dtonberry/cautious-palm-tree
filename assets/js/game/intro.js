@@ -2,6 +2,12 @@ import TILES from "./tile-mapping.js";
 import TownScene from "./townscene.js";
 import PlayGame from "./puzzleScene.js";
 import IntroCutscene from "./introCutscene.js";
+import HouseScene from "./houseScene.js";
+
+//constants
+const COLOR_PRIMARY = 0xAAAEE;
+const COLOR_LIGHT = 0x7b5e57;
+const COLOR_DARK = 0x260e04;
 
 //#region world properties
 let player;
@@ -14,7 +20,7 @@ let config;
 let dialog;
 let music;
 let doorOpen = false;
-let reddoor;
+let questAccepted;
 let inventory = [""];
 //#endregion
 
@@ -36,7 +42,7 @@ window.onload = function() {
             }
         },
         antialias: false,
-        scene: [MainMenu, IntroScene, TownScene, PlayGame, IntroCutscene]
+        scene: [MainMenu, IntroScene, TownScene, PlayGame, IntroCutscene, HouseScene]
     }
     game = new Phaser.Game(config);
     window.focus();
@@ -90,11 +96,16 @@ export default class MainMenu extends Phaser.Scene {
     }
 }
 
+
+
 function startGame() {
     game.sound.stopAll();
+    localStorage.setItem("QuestAccepted", 0);
     game.scene.remove("MainMenu"); //remove (destroy) the open main menu scene
     game.scene.start('IntroScene'); //open the new intro scene
 }
+
+
 
 
 //#region Intro Scene

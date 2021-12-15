@@ -7,6 +7,9 @@ let cursors;
 let game;
 let config;
 let rand;
+let previousX;
+let previousY;
+let questAccepted;
 //#endregion
 
 //-------------------CONFIG------------------------
@@ -39,6 +42,8 @@ window.onload = function() {
 export default class TownScene extends Phaser.Scene {
     constructor() {
         super("TownScene");
+        previousX = parseInt(localStorage.getItem('playerX')) || 0;
+        previousY = parseInt(localStorage.getItem('playerY')) || 0;
     }
 
     preload() {
@@ -63,9 +68,6 @@ export default class TownScene extends Phaser.Scene {
         //create corrolation between up, down, left and right keys with the addition of space and shift and game
         cursors = this.input.keyboard.createCursorKeys();
 
-        //add the ui screen
-        const ui = this.add.sprite(400, 400, 'ui_menu');
-
         //load the scene
         let map = this.make.tilemap({ key: 'snowmap' });
         let tileset = map.addTilesetImage('!CL_DEMO', 'snow_base_tiles');
@@ -83,13 +85,14 @@ export default class TownScene extends Phaser.Scene {
 
         //spawn in the player
         player = this.physics.add
-            .sprite(400, 450, "player");
+            .sprite(400, 600, "player");
         player.body.setCollideWorldBounds(true, 1, 1);
         player.setBounce(1);
 
         //camera follow player
         camera.startFollow(player);
         camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+        camera.zoom = 2;
 
         //add collisions
         decorationLayer.setCollisionByProperty({ collides: true });
@@ -104,11 +107,26 @@ export default class TownScene extends Phaser.Scene {
             doorLayer.setTileIndexCallback(TILES.DOOR, null);
             camera.fade(250, 0, 0, 0);
             camera.once("camerafadeoutcomplete", () => {
-                this.scene.stop("TownScene");
-                this.scene.start("IntroScene");
+                this.scene.sleep("TownScene");
+                this.scene.start("HouseScene", this);
             });
         });
-        this.physics.add.overlap(player, doorLayer);
+        //check if the player is on the tile for cave entrace
+        decorationLayer.setTileIndexCallback(TILES.CAVEDOOR, () => {
+            decorationLayer.setTileIndexCallback(TILES.CAVEDOOR, null);
+            camera.fade(250, 0, 0, 0);
+            camera.once("camerafadeoutcomplete", () => {
+                this.scene.sleep("TownScene");
+                this.scene.start("HouseScene", this);
+            });
+        });
+        this.physics.add.overlap(player, doorLayer, () => {
+            localStorage.setItem('playerX', player.body.position.x);
+            localStorage.setItem('playerY', player.body.position.y);
+        });
+        this.physics.add.overlap(player, decorationLayer);
+
+
 
 
     }
@@ -118,7 +136,7 @@ export default class TownScene extends Phaser.Scene {
 
         //if spacebar is pressed
         if (cursors.space.isDown) {
-            player.anims.play('attack', true);
+            console.log(previousX, previousY);
         }
 
         //if left arrow is pressed

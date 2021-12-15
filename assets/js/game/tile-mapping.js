@@ -1,7 +1,9 @@
 let TILE_MAPPING = {
     BLANK: 520,
-    DOOR: [407, 408, 447, 448, 487, 488],
-    GRASS: 425
+    DOOR: [407, 408, 447, 448, 487, 488, 854],
+    GRASS: 425,
+    CAVEDOOR: [568, 571],
+    CAVEGRASS: 7156
 };
 
 export default TILE_MAPPING;
