@@ -24,10 +24,9 @@ window.onload = function() {
                         x: 0,
                         y: 0
                     },
-                    tileBias: 48
                 }
             },
-            antialias: false,
+            antialias: true,
             pixelArt: true,
             Scene: [TownScene]
         }
@@ -37,7 +36,7 @@ window.onload = function() {
     }
     //------------------END CONFIG----------------------
 
-class TownScene extends Phaser.Scene {
+export default class TownScene extends Phaser.Scene {
     constructor() {
         super("TownScene");
     }
@@ -54,8 +53,8 @@ class TownScene extends Phaser.Scene {
         this.load.image('ui_menu', "../assets/images/uiMain.png");
 
         //lets load the scene JSON
-        this.load.image('base_tiles', '../PhaserEditor Files/assets/!CL_DEMO_48x48.png');
-        this.load.tilemapTiledJSON('map', '../PhaserEditor Files/assets/townscene.json');
+        this.load.image('snow_base_tiles', '../PhaserEditor Files/assets/!CL_DEMO.png');
+        this.load.tilemapTiledJSON('snowmap', '../PhaserEditor Files/assets/townscene.json');
     }
 
     create() {
@@ -68,8 +67,8 @@ class TownScene extends Phaser.Scene {
         const ui = this.add.sprite(400, 400, 'ui_menu');
 
         //load the scene
-        let map = this.make.tilemap({ key: 'map' });
-        let tileset = map.addTilesetImage('!CL_DEMO_48x48', 'base_tiles');
+        let map = this.make.tilemap({ key: 'snowmap' });
+        let tileset = map.addTilesetImage('!CL_DEMO', 'snow_base_tiles');
 
         //set world FPS to 30 so we don't use too much CPU resources
         //also set the world bounds to the edge of the camera for the sake of redundancy
@@ -77,15 +76,14 @@ class TownScene extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, map.x, camera.y - map.y);
 
         //we need to extract all of the different layers and set them on our scene
-        let baseLayer = map.createLayer('base layer', tileset, 0, 0);
-        let grassLayer = map.createLayer('grass layer', tileset, 0, 0);
+        let groundLayer = map.createLayer('ground layer', tileset, 0, 0);
+        let decorationLayer = map.createLayer('decoration layer', tileset, 0, 0);
         let houseLayer = map.createLayer('house layer', tileset, 0, 0);
         let doorLayer = map.createLayer('door layer', tileset, 0, 0);
 
         //spawn in the player
         player = this.physics.add
             .sprite(400, 450, "player");
-        player.setScale(2);
         player.body.setCollideWorldBounds(true, 1, 1);
         player.setBounce(1);
 
@@ -94,16 +92,12 @@ class TownScene extends Phaser.Scene {
         camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
         //add collisions
+        decorationLayer.setCollisionByProperty({ collides: true });
+        groundLayer.setCollisionByProperty({ collides: true });
         houseLayer.setCollisionByProperty({ collides: true });
         this.physics.add.collider(player, houseLayer, () => console.log("collided"), null, this);
-
-        //random encounter in grass
-        this.physics.add.overlap(player, grassLayer, this.enemyEncounter, null, this);
-        grassLayer.setTileIndexCallback(TILES.GRASS, () => {
-            grassLayer.setTileIndexCallback(TILES.GRASS, null);
-            console.log(this.rand);
-
-        });
+        this.physics.add.collider(player, groundLayer);
+        this.physics.add.collider(player, decorationLayer);
 
         //check if player is at a door
         doorLayer.setTileIndexCallback(TILES.DOOR, () => {
@@ -116,33 +110,7 @@ class TownScene extends Phaser.Scene {
         });
         this.physics.add.overlap(player, doorLayer);
 
-        //#region animations
-        //set some animations
 
-        //move forward animation
-        this.anims.create({
-            key: 'forward',
-            frames: this.anims.generateFrameNumbers('player', { frames: [9, 10, 11, 10] })
-        })
-
-        //move back animation
-        this.anims.create({
-            key: 'backward',
-            frames: this.anims.generateFrameNumbers('player', { frames: [0, 1, 2, 1] })
-        })
-
-        //move left animation
-        this.anims.create({
-            key: 'left',
-            frames: this.anims.generateFrameNumbers('player', { frames: [3, 4, 5, 4] })
-        })
-
-        //move right animation
-        this.anims.create({
-                key: 'right',
-                frames: this.anims.generateFrameNumbers('player', { frames: [6, 7, 8, 7] })
-            })
-            //#endregion
     }
 
     update() {
@@ -179,9 +147,4 @@ class TownScene extends Phaser.Scene {
             player.anims.msPerFrame = 100;
         }
     }
-
-    enemyEncounter() {
-        rand = Math.floor(Math.random * 100);
-    }
 }
-export default TownScene;

@@ -8,7 +8,6 @@ let player;
 let mysteryStanger;
 
 
-
 export default class IntroCutscene extends Phaser.Scene {
     constructor() {
         super('IntroCutscene');
@@ -54,6 +53,9 @@ export default class IntroCutscene extends Phaser.Scene {
         let grassForeground2 = this.physics.add.sprite(400, 203, 'grassForeground2');
         //#endregion
 
+        let audio = this.sound.play('gloom');
+        this.sound.volume = 0.1;
+
         //add sultanate and mysterious stranger
         sultanate = this.physics.add.sprite(0, 500, 'sultanate');
         sultanate.setScale(2);
@@ -62,7 +64,6 @@ export default class IntroCutscene extends Phaser.Scene {
         cursors = this.input.keyboard.createCursorKeys();
 
         this.physics.add.collider(sultanate, grassForeground);
-
 
         //#region animations
         //set some animations
@@ -92,8 +93,8 @@ export default class IntroCutscene extends Phaser.Scene {
                 frames: this.anims.generateFrameNumbers('sultanate', { frames: [6, 7, 8, 7, 6] })
             })
             //#endregion
-
         text = this.add.text(400, 300, '');
+
     }
 
 
@@ -102,9 +103,10 @@ export default class IntroCutscene extends Phaser.Scene {
     update() {
         cutsceneScript();
         if (sultanate.body.position.x >= 400) {
+            this.sound.stopAll();
             this.scene.remove("IntroCutscene", true, true);
-
             this.scene.start("IntroScene", true, true);
+            this.cameras.main.fadeIn(2000);
         }
     }
 }

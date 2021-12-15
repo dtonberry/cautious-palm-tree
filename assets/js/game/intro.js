@@ -52,7 +52,8 @@ export default class MainMenu extends Phaser.Scene {
         this.load.image('bg', '../assets/sprites/background.png'); //load our background image
         this.load.image('button', '../assets/sprites/Buttons & Sliders/PNG/green_button05.png');
         //load some audio
-        this.load.audio('intro', '../assets/audio/intro.wav');
+        this.load.audio('intro', '../assets/audio/MainMenu.wav');
+        this.load.audio('gloom', '../assets/audio/intro.WAV');
     }
 
     create() {
@@ -63,7 +64,9 @@ export default class MainMenu extends Phaser.Scene {
         //#endregion
 
         //add the music
-        // this.sound.play('intro');
+        let audio = this.sound.play('intro');
+        this.sound.volume = 0.1;
+
 
         //#region add selection buttons
         let button = this.add.text(400, 300, "Play Game")
@@ -72,6 +75,14 @@ export default class MainMenu extends Phaser.Scene {
             .setStyle({ backgroundColor: '#000000' })
             .setInteractive({ useHandCursor: true })
             .on('pointerdown', startGame)
+
+        button.setVisible(false);
+
+        //fade in and when complete, show the play button
+        this.cameras.main.fadeIn(1000);
+        this.cameras.main.once('camerafadeincomplete', function() {
+            button.setVisible(true);
+        });
     }
 
     update() {
@@ -80,8 +91,9 @@ export default class MainMenu extends Phaser.Scene {
 }
 
 function startGame() {
+    game.sound.stopAll();
     game.scene.remove("MainMenu"); //remove (destroy) the open main menu scene
-    game.scene.start('IntroCutscene'); //open the new intro scene
+    game.scene.start('IntroScene'); //open the new intro scene
 }
 
 
@@ -198,6 +210,9 @@ export class IntroScene extends Phaser.Scene {
                 frames: this.anims.generateFrameNumbers('player', { frames: [6, 7, 8, 7] })
             })
             //#endregion
+
+        //lets set up a dialog box
+        let dialogBox = this.add.text(400, 650, "Hello!")
     }
 
 
