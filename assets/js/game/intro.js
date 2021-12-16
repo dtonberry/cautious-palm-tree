@@ -23,6 +23,7 @@ let dialog;
 let music;
 let doorOpen = false;
 let questAccepted;
+let fantasybg;
 let inventory = [""];
 //#endregion
 
@@ -57,7 +58,12 @@ export default class MainMenu extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('bg', '../assets/sprites/background.png'); //load our background image
+        this.load.image('bg', '../assets/images/background.png'); //load our background image
+        this.load.spritesheet('fantasy', '../assets/images/fantasy.png', {
+            frameWidth: 2500 / 5,
+            frameHeight: 1668 / 6,
+            frames: 30
+        });
         this.load.image('button', '../assets/sprites/Buttons & Sliders/PNG/green_button05.png');
         //load some audio
         this.load.audio('intro', '../assets/audio/MainMenu.wav');
@@ -68,10 +74,40 @@ export default class MainMenu extends Phaser.Scene {
 
     create() {
         //#region add background
-        let bg = this.add.sprite(-80, 0, 'bg');
+        fantasybg = this.add.sprite(400, 300, 'fantasy');
+        fantasybg.displayHeight = 600;
+        fantasybg.displayWidth = 800;
+        let bg = this.add.sprite(10, 400, 'bg');
         bg.setOrigin(0, 0);
-        bg.setScale(1.6);
+        bg.setScale(0.8);
+
+        this.anims.create({
+            key: 'fantasy',
+            frames: this.anims.generateFrameNumbers('fantasy', { start: 0, end: 29, first: 0 })
+        })
+
+
         //#endregion
+
+        this.tweens.add({
+            targets: bg,
+            x: 700,
+            props: {
+                y: { value: 20, duration: 1500, ease: 'Bounce.easeIn' },
+            },
+            delay: 1000
+        });
+
+        this.tweens.add({
+            targets: bg,
+            alpha: {
+                start: 0.1,
+                from: 0.1,
+                to: 1
+            },
+            delay: 1000,
+            duration: 1500
+        });
 
         //add the music
         let audio = this.sound.play('intro');
@@ -96,6 +132,7 @@ export default class MainMenu extends Phaser.Scene {
     }
 
     update() {
+        fantasybg.anims.play('fantasy', true);
 
     }
 }
