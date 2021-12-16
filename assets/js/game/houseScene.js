@@ -10,7 +10,6 @@ let adil;
 let destin;
 let erian;
 let text;
-let houseName;
 let puzzleStart;
 
 export default class HouseScene extends Phaser.Scene {
@@ -26,11 +25,6 @@ export default class HouseScene extends Phaser.Scene {
             frameHeight: 32,
             frames: 12
         }); //this loads our character spritesheet
-        this.load.spritesheet('enemies', '../assets/sprites/dude.png', {
-            frameWidth: 32,
-            frameHeight: 48,
-            frames: 9
-        }); //this loads out enemies spritesheet
 
         //lets load the actually scene JSON
         this.load.image('base_tiles', '../PhaserEditor Files/assets/!CL_DEMO_48x48.png');
@@ -101,12 +95,10 @@ export default class HouseScene extends Phaser.Scene {
             sultanate = this.physics.add
                 .staticSprite(400, 300, "sultanate"); //load the player sprite
             sultanate.setScale(2); //fit the sprite to the background
-            houseName = this.add.text(player.body.position.x - 400, player.body.position.y - 300, 'Sultanates House');
         } else if (previousX <= 537 && previousX >= 504) {
             adil = this.physics.add
                 .staticSprite(400, 300, "adil"); //load the player sprite
             adil.setScale(2); //fit the sprite to the background
-            houseName = this.add.text(player.body.position.x - 400, player.body.position.y - 300, 'Adils House');
         } else if (previousX <= 690 && previousX >= 650) {
             destin = this.physics.add
                 .staticSprite(400, 300, "destin"); //load the player sprite
@@ -114,7 +106,6 @@ export default class HouseScene extends Phaser.Scene {
             erian = this.physics.add
                 .staticSprite(700, 300, "erian"); //load the player sprite
             erian.setScale(2); //fit the sprite to the background
-            houseName = this.add.text(player.body.position.x - 400, player.body.position.y - 300, 'Destin and Erians House');
         }
 
         //set up camera so that you can't move outside the tilemap
@@ -173,6 +164,7 @@ export default class HouseScene extends Phaser.Scene {
             doorLayer.setTileIndexCallback(TILES.DOOR, null);
             camera.fade(250, 0, 0, 0);
             camera.once("camerafadeoutcomplete", () => {
+                this.sound.stopAll();
                 this.scene.stop("HouseScene");
                 this.scene.run("TownScene");
             });
@@ -216,7 +208,6 @@ export default class HouseScene extends Phaser.Scene {
         player.body.setVelocity(0);
 
         text.setPosition(player.body.position.x - 200, player.body.position.y + 100);
-        houseName.setPosition(player.body.position.x - 250, player.body.position.y - 200);
 
         if (cursors.left.isDown) {
             player.body.setVelocityX(-100);
@@ -245,6 +236,7 @@ export default class HouseScene extends Phaser.Scene {
 
         if (puzzleStart == true) {
             if (localStorage.getItem("QuestAccepted") == 0) {
+                localStorage.setItem('PreviousScene', 'HouseScene')
                 this.scene.switch("PlayGame");
                 puzzleStart = false;
             }

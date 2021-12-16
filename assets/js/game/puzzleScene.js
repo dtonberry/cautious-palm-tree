@@ -214,11 +214,21 @@ export default class PlayGame extends Phaser.Scene {
 
 
     HandleComplete() {
-        if (scoreText.text >= 120) {
+        if (scoreText.text >= 120 && localStorage.getItem("QuestAccepted") == 0) {
             isCleared = true;
-            localStorage.setItem("QuestAccepted", 1);
-            this.scene.switch("HouseScene");
             scoreText.text = 0;
+            localStorage.setItem("QuestAccepted", 1);
+            this.scene.switch(localStorage.getItem('PreviousScene'));
+        } else if (scoreText.text >= 180 && localStorage.getItem("QuestAccepted") == 2) {
+            isCleared = true;
+            scoreText.text = 0;
+            localStorage.setItem("QuestAccepted", 3);
+            this.scene.switch(localStorage.getItem('PreviousScene'));
+        } else if (scoreText.text >= 220 && localStorage.getItem("QuestAccepted") == 3) {
+            isCleared = true;
+            scoreText.text = 0;
+            localStorage.setItem("QuestAccepted", 4);
+            this.scene.switch(localStorage.getItem('PreviousScene'));
         }
     }
 

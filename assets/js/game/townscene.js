@@ -42,8 +42,6 @@ window.onload = function() {
 export default class TownScene extends Phaser.Scene {
     constructor() {
         super("TownScene");
-        previousX = parseInt(localStorage.getItem('playerX')) || 0;
-        previousY = parseInt(localStorage.getItem('playerY')) || 0;
     }
 
     preload() {
@@ -65,8 +63,13 @@ export default class TownScene extends Phaser.Scene {
     create() {
         let camera = this.cameras.main; //initialize the camera
 
+        previousX = parseInt(localStorage.getItem('playerX')) || 0;
+        previousY = parseInt(localStorage.getItem('playerY')) || 0;
+
         //create corrolation between up, down, left and right keys with the addition of space and shift and game
         cursors = this.input.keyboard.createCursorKeys();
+
+        this.sound.play('town');
 
         //load the scene
         let map = this.make.tilemap({ key: 'snowmap' });
@@ -112,12 +115,12 @@ export default class TownScene extends Phaser.Scene {
             });
         });
         //check if the player is on the tile for cave entrace
-        decorationLayer.setTileIndexCallback(TILES.CAVEDOOR, () => {
-            decorationLayer.setTileIndexCallback(TILES.CAVEDOOR, null);
+        decorationLayer.setTileIndexCallback(TILES.CAVEENTRANCE, () => {
+            decorationLayer.setTileIndexCallback(TILES.CAVEENTRANCE, null);
             camera.fade(250, 0, 0, 0);
             camera.once("camerafadeoutcomplete", () => {
                 this.scene.sleep("TownScene");
-                this.scene.start("HouseScene", this);
+                this.scene.start("DungeonMap2", this);
             });
         });
         this.physics.add.overlap(player, doorLayer, () => {

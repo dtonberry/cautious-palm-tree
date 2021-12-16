@@ -3,6 +3,8 @@ import TownScene from "./townscene.js";
 import PlayGame from "./puzzleScene.js";
 import IntroCutscene from "./introCutscene.js";
 import HouseScene from "./houseScene.js";
+import DungeonMap1 from "./dungeonSceneMap1.js";
+import DungeonMap2 from "./dungeonSceneMap2.js";
 
 //constants
 const COLOR_PRIMARY = 0xAAAEE;
@@ -42,7 +44,7 @@ window.onload = function() {
             }
         },
         antialias: false,
-        scene: [MainMenu, IntroScene, TownScene, PlayGame, IntroCutscene, HouseScene]
+        scene: [MainMenu, IntroScene, TownScene, PlayGame, IntroCutscene, HouseScene, DungeonMap1, DungeonMap2]
     }
     game = new Phaser.Game(config);
     window.focus();
@@ -60,6 +62,8 @@ export default class MainMenu extends Phaser.Scene {
         //load some audio
         this.load.audio('intro', '../assets/audio/MainMenu.wav');
         this.load.audio('gloom', '../assets/audio/intro.WAV');
+        this.load.audio('dungeon', '../assets/audio/dungeon.wav');
+        this.load.audio('town', '../assets/audio/town.wav');
     }
 
     create() {
