@@ -82,7 +82,7 @@ export default class DungeonMap2 extends Phaser.Scene {
                 camera.once("camerafadeoutcomplete", () => {
                     this.sound.stopAll();
                     this.scene.sleep("DungeonMap2");
-                    this.scene.start("DungeonMap1", this);
+                    this.scene.start("DungeonMap3", this);
                 });
             }
 
@@ -103,7 +103,7 @@ export default class DungeonMap2 extends Phaser.Scene {
                         .on('pointerdown', function() {
                             if (localStorage.getItem('QuestAccepted') == 3) {
                                 localStorage.setItem('QuestAccepted', 4);
-                                key.setVisible = false;
+                                key.setVisible(false);
                                 puzzleStart = true;
                                 text.setText("")
                                     .setPadding()

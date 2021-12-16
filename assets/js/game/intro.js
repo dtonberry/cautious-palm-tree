@@ -24,7 +24,7 @@ let music;
 let doorOpen = false;
 let questAccepted;
 let fantasybg;
-let inventory = [""];
+let keyboardEnabled;
 //#endregion
 
 window.onload = function() {
@@ -110,8 +110,8 @@ export default class MainMenu extends Phaser.Scene {
         });
 
         //add the music
-        let audio = this.sound.play('intro');
-        this.sound.volume = 0.1;
+        let audio = this.sound.play('intro', { loop: true });
+        this.sound.volume = 0.01;
 
 
         //#region add selection buttons
@@ -133,7 +133,6 @@ export default class MainMenu extends Phaser.Scene {
 
     update() {
         fantasybg.anims.play('fantasy', true);
-
     }
 }
 
@@ -163,11 +162,7 @@ export class IntroScene extends Phaser.Scene {
             frameHeight: 32,
             frames: 12
         }); //this loads our character spritesheet
-        this.load.spritesheet('enemies', '../assets/sprites/dude.png', {
-            frameWidth: 32,
-            frameHeight: 48,
-            frames: 9
-        }); //this loads out enemies spritesheet
+
 
         //lets load the actually scene JSON
         this.load.image('base_tiles', '../PhaserEditor Files/assets/!CL_DEMO_48x48.png');
@@ -176,6 +171,9 @@ export class IntroScene extends Phaser.Scene {
         this.anims.remove('backward');
         this.anims.remove('left');
         this.anims.remove('right');
+
+        this.load.plugin('rexroundrectangleplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexroundrectangleplugin.min.js', true);
+
     }
 
     create() {
@@ -206,6 +204,7 @@ export class IntroScene extends Phaser.Scene {
         player.setBounce(1);
         //#endregion
 
+        this.input.keyboard.disableGlobalCapture();
         //set up camera so that you can't move outside the tilemap
         camera.startFollow(player);
         camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
@@ -233,6 +232,7 @@ export class IntroScene extends Phaser.Scene {
             });
         });
         this.physics.add.overlap(player, doorLayer);
+        keyboardEnabled = false;
 
 
         //#region animations
@@ -263,27 +263,44 @@ export class IntroScene extends Phaser.Scene {
             })
             //#endregion
 
-        //lets set up a dialog box
-        let dialogBox = this.add.text(400, 650, "Hello!")
+        //#region dialog box
+        let rect = this.add.rexRoundRectangle(player.body.position.x + 50, player.body.position.y + 225, 600, 100, 32, 0x000000, 0.5);
+        rect.setInteractive()
+            .on('pointerdown', function() {
+                dialogBox.setText("Welcome to Tales of Adventure")
+                rect.on('pointerdown', function() {
+                    dialogBox.setText("Movement is done using the arrow keys\nInteracting with objects with space\nand holding arrow towards them")
+                    rect.on('pointerdown', function() {
+                        dialogBox.setText("Solve puzzles by dragging the gems\nwith the left mouse button", { align: 'center' })
+                        rect.on('pointerdown', function() {
+                            keyboardEnabled = true;
+                            rect.setVisible(false);
+                            dialogBox.setVisible(false);
+                        })
+                    })
+                })
+            });
+
+        let dialogBox = this.add.text(450, 650, "Hello!\nClick this box to continue", { align: 'left' });
+        dialogBox.setOrigin(0.5, 0.5);
+
+
+        //#endregion
+
+
     }
 
 
 
 
     update() {
+
+        if (keyboardEnabled == true) {
+            this.input.keyboard.enabled = true;
+        } else if (keyboardEnabled == false) {
+            this.input.keyboard.enabled = false
+        }
         player.body.setVelocity(0);
-
-        // inventory.forEach(function(item, keyColor) {
-        //     if (item == `${keyColor}`) {
-        //         RemoveBody(`${keyColor}door`);
-        //     }
-        // })
-
-        // //if spacebar is pressed
-        // if (cursors.space.isDown) {
-        //     this.physics.world.removeCollider(this.randomCollider);
-        // }
-
         //if left arrow is pressed
         if (cursors.left.isDown) {
             player.body.setVelocityX(-100);

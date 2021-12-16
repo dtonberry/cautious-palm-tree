@@ -69,7 +69,7 @@ export default class TownScene extends Phaser.Scene {
         //create corrolation between up, down, left and right keys with the addition of space and shift and game
         cursors = this.input.keyboard.createCursorKeys();
 
-        this.sound.play('town');
+        this.sound.play('town', { loop: true });
 
         //load the scene
         let map = this.make.tilemap({ key: 'snowmap' });

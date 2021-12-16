@@ -84,7 +84,7 @@ export default class HouseScene extends Phaser.Scene {
 
         //#region player
         player = this.physics.add
-            .sprite(400, 450, "player"); //load the player sprite
+            .sprite(500, 250, "player"); //load the player sprite
         player.setScale(2); //fit the sprite to the background
         player.body.setCollideWorldBounds(true, 1, 1);
         player.setBounce(1);
@@ -95,7 +95,7 @@ export default class HouseScene extends Phaser.Scene {
             sultanate = this.physics.add
                 .staticSprite(400, 300, "sultanate"); //load the player sprite
             sultanate.setScale(2); //fit the sprite to the background
-        } else if (previousX <= 537 && previousX >= 504) {
+        } else if (previousX <= 537 && previousX >= 487) {
             adil = this.physics.add
                 .staticSprite(400, 300, "adil"); //load the player sprite
             adil.setScale(2); //fit the sprite to the background
@@ -126,7 +126,10 @@ export default class HouseScene extends Phaser.Scene {
         //#region sultanate interaction
         //this is an absolute mess!!
         this.physics.add.collider(player, sultanate, function() {
-            if (player.body.touching.up && sultanate.body.touching.down) {
+            if (player.body.touching.down && sultanate.body.touching.up ||
+                player.body.touching.up && sultanate.body.touching.down ||
+                player.body.touching.left && sultanate.body.touching.right ||
+                player.body.touching.right && sultanate.body.touching.left) {
                 if (cursors.space.isDown) {
                     text.setText("Thank you for heeding my call, brave knight. ")
                         .setPadding(30)
@@ -140,7 +143,10 @@ export default class HouseScene extends Phaser.Scene {
 
         //#region adil interaction
         this.physics.add.collider(player, adil, function() {
-            if (player.body.touching.up && adil.body.touching.down) {
+            if (player.body.touching.down && adil.body.touching.up ||
+                player.body.touching.up && adil.body.touching.down ||
+                player.body.touching.left && adil.body.touching.right ||
+                player.body.touching.right && adil.body.touching.left) {
                 if (cursors.space.isDown) {
                     text.setText("The winds change again, young Mathew.")
                         .setPadding(30)
@@ -151,8 +157,42 @@ export default class HouseScene extends Phaser.Scene {
             }
         });
         //#endregion
-        this.physics.add.collider(player, destin);
-        this.physics.add.collider(player, erian);
+        this.physics.add.collider(player, destin, function() {
+            if (player.body.touching.down && destin.body.touching.up ||
+                player.body.touching.up && destin.body.touching.down ||
+                player.body.touching.left && destin.body.touching.right ||
+                player.body.touching.right && destin.body.touching.left) {
+                if (cursors.space.isDown) {
+                    text.setText("Have you been keeping up\nYour studies, Mathew?")
+                        .setPadding(30)
+                        .setStyle({ backgroundColor: '#000000' })
+                        .setInteractive({ useHandCursor: true })
+                        .on('pointerdown', function() {
+                            text.setText("")
+                                .setPadding(0)
+                                .setStyle({})
+                        });
+                }
+            }
+        });
+        this.physics.add.collider(player, erian, function() {
+            if (player.body.touching.down && erian.body.touching.up ||
+                player.body.touching.up && erian.body.touching.down ||
+                player.body.touching.left && erian.body.touching.right ||
+                player.body.touching.right && erian.body.touching.left) {
+                if (cursors.space.isDown) {
+                    text.setText("Keeping your sword sharp\nI hope, Mathew.")
+                        .setPadding(30)
+                        .setStyle({ backgroundColor: '#000000' })
+                        .setInteractive({ useHandCursor: true })
+                        .on('pointerdown', function() {
+                            text.setText("")
+                                .setPadding(0)
+                                .setStyle({})
+                        });
+                }
+            }
+        });
 
         //debug to check player hitbox
         // this.input.keyboard.once("keydown-D", event => {
