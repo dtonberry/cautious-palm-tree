@@ -18,6 +18,7 @@ const VERTICAL = 2;
 let score = 100;
 let scoreText;
 let scoreLabel;
+let skipButton;
 
 let isCleared = false;
 
@@ -40,8 +41,15 @@ export default class PlayGame extends Phaser.Scene {
         this.input.on("pointermove", this.startSwipe, this);
         this.input.on("pointerup", this.stopSwipe, this);
 
-        scoreLabel = this.add.text(20, 20, `Score: `);
-        scoreText = this.add.text(100, 20, `${score}`);
+        scoreLabel = this.add.text(620, 20, `Score: `);
+        scoreText = this.add.text(680, 20, `${score}`);
+        skipButton = this.add.text(600, 500, 'Skip')
+            .setPadding(30)
+            .setStyle({ backgroundColor: '#000000' })
+            .setInteractive({ useHandCursor: true })
+            .on('pointerdown', function() {
+                score = score + 20;
+            });
     }
     drawField() {
         this.gameArray = [];
@@ -216,19 +224,16 @@ export default class PlayGame extends Phaser.Scene {
     HandleComplete() {
         if (scoreText.text >= 120 && localStorage.getItem("QuestAccepted") == 0) {
             isCleared = true;
-            scoreText.text = 0;
             localStorage.setItem("QuestAccepted", 1);
             this.scene.switch(localStorage.getItem('PreviousScene'));
         } else if (scoreText.text >= 180 && localStorage.getItem("QuestAccepted") == 2) {
             isCleared = true;
-            scoreText.text = 0;
             localStorage.setItem("QuestAccepted", 3);
             this.scene.switch(localStorage.getItem('PreviousScene'));
-        } else if (scoreText.text >= 220 && localStorage.getItem("QuestAccepted") == 3) {
+        } else if (scoreText.text >= 220 && localStorage.getItem("QuestAccepted") == 4) {
             isCleared = true;
-            scoreText.text = 0;
-            localStorage.setItem("QuestAccepted", 4);
-            this.scene.switch(localStorage.getItem('PreviousScene'));
+            localStorage.setItem("QuestAccepted", 5);
+            this.scene.switch('DungeonMap2');
         }
     }
 

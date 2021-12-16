@@ -119,8 +119,9 @@ export default class TownScene extends Phaser.Scene {
             decorationLayer.setTileIndexCallback(TILES.CAVEENTRANCE, null);
             camera.fade(250, 0, 0, 0);
             camera.once("camerafadeoutcomplete", () => {
+                this.sound.stopAll();
                 this.scene.sleep("TownScene");
-                this.scene.start("DungeonMap2", this);
+                this.scene.start("DungeonMap1", this);
             });
         });
         this.physics.add.overlap(player, doorLayer, () => {

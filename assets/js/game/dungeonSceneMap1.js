@@ -93,7 +93,7 @@ export default class DungeonMap1 extends Phaser.Scene {
                         .setStyle({ backgroundColor: '#000000' })
                         .setInteractive({ useHandCursor: true })
                         .on('pointerdown', function() {
-                            if (localStorage.getItem('QuestAccepted') == 1) {
+                            if (localStorage.getItem('QuestAccepted') >= 1) {
                                 CarysDialog();
                             }
                         });
@@ -111,7 +111,7 @@ export default class DungeonMap1 extends Phaser.Scene {
                     this.scene.sleep("DungeonMap1");
                     this.scene.start("TownScene");
                 });
-            } else if (localStorage.getItem('QuestAccepted') == 3 && player.body.position.x >= 224 && player.body.position.x <= 288) {
+            } else if (localStorage.getItem('QuestAccepted') >= 3 && player.body.position.x >= 224 && player.body.position.x <= 288) {
                 camera.fade(250, 0, 0, 0);
                 camera.once("camerafadeoutcomplete", () => {
                     this.sound.stopAll();

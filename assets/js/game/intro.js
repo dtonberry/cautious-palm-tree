@@ -125,7 +125,7 @@ export default class MainMenu extends Phaser.Scene {
         button.setVisible(false);
 
         //fade in and when complete, show the play button
-        this.cameras.main.fadeIn(1000);
+        this.cameras.main.fadeIn(2500);
         this.cameras.main.once('camerafadeincomplete', function() {
             button.setVisible(true);
         });

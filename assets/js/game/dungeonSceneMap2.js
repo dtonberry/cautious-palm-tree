@@ -6,7 +6,7 @@ let game;
 let cursors;
 let tmap;
 let text;
-let puzzleStart;
+let puzzleStart = false;
 
 export default class DungeonMap2 extends Phaser.Scene {
     constructor() {
@@ -21,14 +21,9 @@ export default class DungeonMap2 extends Phaser.Scene {
             frames: 12
         });
 
-        this.load.spritesheet('carys', '../assets/sprites/Player Sprites/carys.png', {
-            frameWidth: 32,
-            frameHeight: 32,
-            frames: 12
-        });
-
         //lets load the scene JSON
         this.load.image('dungeon_base_tiles', '../PhaserEditor Files/assets/MainLev2.0.png');
+        this.load.image('key', '../assets/sprites/key.png');
         this.load.tilemapTiledJSON('dungeonmap2', '../PhaserEditor Files/assets/dungeonMap2.json');
     }
 
@@ -50,6 +45,9 @@ export default class DungeonMap2 extends Phaser.Scene {
         let groundLayer = tmap.createLayer('Floor Layer', tileset, 0, 0);
         let walls = tmap.createLayer('Wall Layer', tileset, 0, 0);
 
+        //create the key
+        let key = this.physics.add.staticSprite(309, 415, 'key');
+
         //#region player
         player = this.physics.add
             .sprite(704, 748, "player"); //load the player sprite
@@ -58,7 +56,7 @@ export default class DungeonMap2 extends Phaser.Scene {
         player.setBounce(1);
         //#endregion
 
-        text = this.add.text(player.body.position.x - 200, player.body.position.y + 100, '');
+        text = this.add.text(player.body.position.x - 100, player.body.position.y + 100, '');
 
         //set up camera so that you can't move outside the tilemap
         camera.startFollow(player);
@@ -90,18 +88,30 @@ export default class DungeonMap2 extends Phaser.Scene {
 
         });
 
-        groundLayer.setTileIndexCallback(TILES.CAVEGRASS, () => {
-            groundLayer.setTileIndexCallback(TILES.CAVEGRASS, null);
-            if (localStorage.getItem('QuestAccepted') == 3) {
-                camera.fade(250, 0, 0, 0);
-                camera.once("camerafadeoutcomplete", () => {
-                    this.sound.stopAll();
-                    this.scene.sleep("DungeonMap2");
-                    this.scene.start("PlayGame", this);
-                });
 
+        this.physics.add.collider(player, key, function() {
+            if (player.body.touching.down && key.body.touching.up ||
+                player.body.touching.up && key.body.touching.down ||
+                player.body.touching.left && key.body.touching.right ||
+                player.body.touching.right && key.body.touching.left) {
+                if (cursors.space.isDown) {
+                    text.setText("The key is locked to the ground with a puzzle")
+                        .setPadding(30)
+                        .setScale(0.5)
+                        .setStyle({ backgroundColor: '#000000' })
+                        .setInteractive({ useHandCursor: true })
+                        .on('pointerdown', function() {
+                            if (localStorage.getItem('QuestAccepted') == 3) {
+                                localStorage.setItem('QuestAccepted', 4);
+                                key.setVisible = false;
+                                puzzleStart = true;
+                                text.setText("")
+                                    .setPadding()
+                                    .setStyle({})
+                            }
+                        });
+                }
             }
-
         });
 
         this.physics.add.overlap(player, groundLayer);
@@ -111,7 +121,7 @@ export default class DungeonMap2 extends Phaser.Scene {
     update() {
         player.body.setVelocity(0);
 
-        text.setPosition(player.body.position.x, player.body.position.y + 100);
+        text.setPosition(player.body.position.x - 100, player.body.position.y + 100);
 
         if (cursors.space.isDown) {
             console.log(player.body.position.x, player.body.position.y);
@@ -142,39 +152,9 @@ export default class DungeonMap2 extends Phaser.Scene {
             player.anims.play('backward', true);
             player.anims.msPerFrame = 100;
         }
-
-        if (puzzleStart == true) {
-            if (localStorage.getItem('QuestAccepted') == 2) {
-                this.scene.switch('PlayGame');
-                localStorage.setItem('PreviousScene', 'DungeonMap1');
-            }
+        if (localStorage.getItem('QuestAccepted') == 4) {
+            this.scene.switch("PlayGame");
         }
 
-    }
-}
-
-function CarysDialog() {
-    if (localStorage.getItem('QuestAccepted') == 1) {
-        text.setText('')
-            .setStyle({})
-            .setPadding(0);
-        localStorage.setItem('QuestAccepted', 2);
-        puzzleStart = true;
-    } else if (localStorage.getItem("QuestAccepted") == 3) {
-        text.setText("You will find the amulet in the next room")
-            .setPadding(30)
-            .setStyle({ backgroundColor: '#000000' })
-            .setInteractive({ useHandCursor: true })
-            .on('pointerdown', function() {
-                text.setText("Go take your plunder!")
-                    .setPadding(30)
-                    .setStyle({ backgroundColor: '#000000' })
-                    .setInteractive({ useHandCursor: true })
-                    .on('pointerdown', function() {
-                        text.setText("")
-                            .setPadding(0)
-                            .setStyle({})
-                    })
-            })
     }
 }
