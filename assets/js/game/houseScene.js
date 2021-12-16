@@ -304,6 +304,22 @@ function SultanateDialog() {
                             .setStyle({})
                     })
             })
+    } else if (localStorage.getItem("QuestAccepted") == 7) {
+        text.setText("Thank you, brave knight.\nI will perform the ritual at once")
+            .setPadding(30)
+            .setStyle({ backgroundColor: '#000000' })
+            .setInteractive({ useHandCursor: true })
+            .on('pointerdown', function() {
+                text.setText("Please find it, brave knight!")
+                    .setPadding(30)
+                    .setStyle({ backgroundColor: '#000000' })
+                    .setInteractive({ useHandCursor: true })
+                    .on('pointerdown', function() {
+                        text.setText("")
+                            .setPadding(0)
+                            .setStyle({})
+                    })
+            })
     } else {
         text.setText("You are to set out on a quest to find the Amulet of Justice.")
             .on('pointerdown', function() {

@@ -5,6 +5,8 @@ import IntroCutscene from "./introCutscene.js";
 import HouseScene from "./houseScene.js";
 import DungeonMap1 from "./dungeonSceneMap1.js";
 import DungeonMap2 from "./dungeonSceneMap2.js";
+import DungeonMap3 from "./dungeonSceneMap3.js";
+import OutroCutscene from "./outroCutscene.js";
 
 //constants
 const COLOR_PRIMARY = 0xAAAEE;
@@ -45,7 +47,7 @@ window.onload = function() {
             }
         },
         antialias: false,
-        scene: [MainMenu, IntroScene, TownScene, PlayGame, IntroCutscene, HouseScene, DungeonMap1, DungeonMap2]
+        scene: [MainMenu, IntroScene, TownScene, PlayGame, IntroCutscene, HouseScene, DungeonMap1, DungeonMap2, DungeonMap3, OutroCutscene]
     }
     game = new Phaser.Game(config);
     window.focus();
@@ -142,7 +144,7 @@ function startGame() {
     game.sound.stopAll();
     localStorage.setItem("QuestAccepted", 0);
     game.scene.remove("MainMenu"); //remove (destroy) the open main menu scene
-    game.scene.start('IntroScene'); //open the new intro scene
+    game.scene.start('OutroCutscene'); //open the new intro scene
 }
 
 

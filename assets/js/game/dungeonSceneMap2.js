@@ -70,7 +70,7 @@ export default class DungeonMap2 extends Phaser.Scene {
         //if player zones, bring them to the correct map
         groundLayer.setTileIndexCallback(TILES.CAVEENTRANCE, () => {
             groundLayer.setTileIndexCallback(TILES.CAVEENTRANCE, null);
-            if (player.body.position.x == 704) {
+            if (player.body.position.x >= 704 && player.body.position.x <= 720) {
                 camera.fade(250, 0, 0, 0);
                 camera.once("camerafadeoutcomplete", () => {
                     this.sound.stopAll();

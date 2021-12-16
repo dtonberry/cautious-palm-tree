@@ -234,6 +234,10 @@ export default class PlayGame extends Phaser.Scene {
             isCleared = true;
             localStorage.setItem("QuestAccepted", 5);
             this.scene.switch('DungeonMap2');
+        } else if (scoreText.text >= 300 && localStorage.getItem("QuestAccepted") == 6) {
+            isCleared = true;
+            localStorage.setItem("QuestAccepted", 7);
+            this.scene.switch('DungeonMap3');
         }
     }
 

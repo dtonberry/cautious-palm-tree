@@ -54,7 +54,6 @@ export default class IntroCutscene extends Phaser.Scene {
         //#endregion
 
         let audio = this.sound.play('gloom');
-        this.sound.volume = 0.1;
 
         //add sultanate and mysterious stranger
         sultanate = this.physics.add.sprite(0, 500, 'sultanate');
@@ -64,6 +63,8 @@ export default class IntroCutscene extends Phaser.Scene {
         cursors = this.input.keyboard.createCursorKeys();
 
         this.physics.add.collider(sultanate, grassForeground);
+
+        text = this.add.text(400, 300, '');
 
         //#region animations
         //set some animations
@@ -111,7 +112,7 @@ export default class IntroCutscene extends Phaser.Scene {
     }
 }
 
-async function cutsceneScript() {
+function cutsceneScript() {
     //open with the sultanate walking on to the screen
 
     if (sultanate.body.position.x != 150) {
@@ -126,7 +127,7 @@ async function cutsceneScript() {
         secondStop();
     }
     if (sultanate.body.position.x >= 300) {
-        text.text = "I am coming for you"
+        text.setText("I am coming for you");
     }
 
 
@@ -137,12 +138,12 @@ function firstStop() {
     sultanate.body.setVelocityX(0);
     sultanate.anims.play('forward', true);
     sultanate.anims.msPerFrame = 0;
-    text.text = 'I wish you were here';
+    text.setText('I wish you were here')
     setInterval(() => {
         sultanate.body.setVelocityX(20);
         sultanate.anims.play('right', true);
         sultanate.anims.msPerFrame = 200;
-        text.text = 'I will find you';
+        text.setText('I will find you')
     }, 3000);
 }
 
@@ -150,7 +151,7 @@ function secondStop() {
     sultanate.body.setVelocityX(20);
     sultanate.anims.play('right', true);
     sultanate.anims.msPerFrame = 200;
-    text.text = 'No matter what it takes';
+    text.setText('No matter what it takes')
 }
 
 function delay(delayInms) {

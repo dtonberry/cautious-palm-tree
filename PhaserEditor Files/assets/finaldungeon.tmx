@@ -994,12 +994,12 @@
   </tile>
   <tile id="198">
    <properties>
-    <property name="collides" type="bool" value="true"/>
+    <property name="collides" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="199">
    <properties>
-    <property name="collides" type="bool" value="true"/>
+    <property name="collides" type="bool" value="false"/>
    </properties>
   </tile>
   <tile id="200">
@@ -48974,7 +48974,7 @@
 5737,5737,5737,5737,8909,8910,5737,5737,5737,5737,
 5737,5737,5737,5737,5737,5737,5737,5737,5737,5737,
 5737,5737,5737,5737,5737,5737,5737,5737,5737,5737,
-0,5737,5737,5737,1831,1832,5737,5737,5737,0
+0,5737,5737,5737,199,200,5737,5737,5737,0
 </data>
  </layer>
  <layer id="1" name="wall layer" width="10" height="10">
