@@ -69,7 +69,7 @@ export default class DungeonMap3 extends Phaser.Scene {
                 camera.once("camerafadeoutcomplete", () => {
                     this.sound.stopAll();
                     this.scene.sleep("DungeonMap3");
-                    this.scene.start("DungeonMap2", this);
+                    this.scene.start("TownScene", this);
                 });
             }
 

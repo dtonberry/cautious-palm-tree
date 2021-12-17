@@ -72,6 +72,7 @@ export default class MainMenu extends Phaser.Scene {
         this.load.audio('gloom', '../assets/audio/intro.WAV');
         this.load.audio('dungeon', '../assets/audio/dungeon.wav');
         this.load.audio('town', '../assets/audio/town.wav');
+        this.load.audio('outro', '../assets/audio/outro.wav');
     }
 
     create() {
@@ -144,7 +145,7 @@ function startGame() {
     game.sound.stopAll();
     localStorage.setItem("QuestAccepted", 0);
     game.scene.remove("MainMenu"); //remove (destroy) the open main menu scene
-    game.scene.start('OutroCutscene'); //open the new intro scene
+    game.scene.start('IntroCutscene'); //open the new intro scene
 }
 
 
@@ -183,6 +184,8 @@ export class IntroScene extends Phaser.Scene {
 
         //create corrolation between up, down, left and right keys with the addition of space and shift and game
         cursors = this.input.keyboard.createCursorKeys();
+
+        localStorage.setItem("QuestAccepted", 0);
 
         //load the scene
         let map = this.make.tilemap({ key: 'tilemap' });
@@ -275,9 +278,12 @@ export class IntroScene extends Phaser.Scene {
                     rect.on('pointerdown', function() {
                         dialogBox.setText("Solve puzzles by dragging the gems\nwith the left mouse button", { align: 'center' })
                         rect.on('pointerdown', function() {
-                            keyboardEnabled = true;
-                            rect.setVisible(false);
-                            dialogBox.setVisible(false);
+                            dialogBox.setText("You should probably go\nto see the sultanate\nshe was looking for you", { align: 'center' })
+                            rect.on('pointerdown', function() {
+                                keyboardEnabled = true;
+                                rect.setVisible(false);
+                                dialogBox.setVisible(false);
+                            })
                         })
                     })
                 })
@@ -296,6 +302,16 @@ export class IntroScene extends Phaser.Scene {
 
 
     update() {
+
+        if (localStorage.getItem("QuestAccepted") == 8) {
+            this.scene.restart("IntroScene");
+            this.scene.restart("TownScene");
+            this.scene.restart("PuzzleScene");
+            this.scene.restart("HouseScene");
+            this.scene.restart("DungeonMap1");
+            this.scene.restart("DungeonMap2");
+            this.scene.restart("DungeonMap3");
+        }
 
         if (keyboardEnabled == true) {
             this.input.keyboard.enabled = true;

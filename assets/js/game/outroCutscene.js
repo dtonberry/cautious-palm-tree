@@ -72,6 +72,10 @@ export default class OutroCutscene extends Phaser.Scene {
     }
 
     create(data) {
+        this.anims.remove('forward');
+        this.anims.remove('backward');
+        this.anims.remove('left');
+        this.anims.remove('right');
 
         //load the scene
         let map = this.make.tilemap({ key: 'tilemap' });
@@ -80,6 +84,8 @@ export default class OutroCutscene extends Phaser.Scene {
         //set the world bounds to the edge of the camera
         //set the world to 30 fps so that we don't eat up too much CPU
         this.physics.world.setFPS(30);
+
+        this.sound.play('outro');
 
         //create layers
         let baseLayer = map.createLayer('base', tileset, 0, 0);
@@ -167,7 +173,8 @@ export default class OutroCutscene extends Phaser.Scene {
         }
 
         if (gameComplete == true) {
-            this.scene.switch("MainMenu");
+            this.sound.stopAll();
+            location.reload();
         }
     }
 

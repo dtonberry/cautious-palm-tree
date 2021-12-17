@@ -247,6 +247,11 @@ export default class HouseScene extends Phaser.Scene {
     update() {
         player.body.setVelocity(0);
 
+        if (localStorage.getItem("QuestAccepted") == 8) {
+            this.sound.stopAll();
+            this.scene.switch("OutroCutscene");
+        }
+
         text.setPosition(player.body.position.x - 200, player.body.position.y + 100);
 
         if (cursors.left.isDown) {
@@ -311,13 +316,11 @@ function SultanateDialog() {
             .setInteractive({ useHandCursor: true })
             .on('pointerdown', function() {
                 text.setText("Please find it, brave knight!")
-                    .setPadding(30)
-                    .setStyle({ backgroundColor: '#000000' })
-                    .setInteractive({ useHandCursor: true })
                     .on('pointerdown', function() {
                         text.setText("")
                             .setPadding(0)
                             .setStyle({})
+                        localStorage.setItem("QuestAccepted", 8)
                     })
             })
     } else {
